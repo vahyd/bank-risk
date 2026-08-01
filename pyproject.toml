@@ -1,0 +1,23 @@
+[project]
+name = "bank-risk-dashboard"
+version = "1.0.0"
+description = "Enterprise Banking Risk Management and AI Intelligence Dashboard"
+requires-python = ">=3.10"
+dependencies = [
+    "streamlit>=1.32.0",
+    "pandas>=2.2.0",
+    "numpy>=1.26.0",
+    "plotly>=5.18.0",
+    "scipy>=1.12.0",
+    "scikit-learn>=1.4.0",
+    "shap>=0.44.0",
+    "pyyaml>=6.0",
+    "openpyxl>=3.1.0",
+    "python-dotenv>=1.0.0",
+]
+
+[project.scripts]
+bank-risk = "app.main:main"
+
+[tool.setuptools.packages.find]
+include = ["app*", "risk_engine*", "data*", "config*"]

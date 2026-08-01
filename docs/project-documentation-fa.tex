@@ -1,0 +1,611 @@
+% !TEX program = xelatex
+% ===========================================================================
+% مستندات پروژه داشبورد مدیریت ریسک بانکی سازمانی
+% Enterprise Banking Risk Management Dashboard — Documentation (Farsi)
+% ===========================================================================
+% کامپایل با: xelatex project-documentation-fa.tex
+% نیازمند فونت: IranNastaliq, IRNazanin, HM XKayhan Navaar, IRMitra, IRMahsa
+% ===========================================================================
+
+\documentclass[12pt,a4paper]{article}
+
+% === Persian Setup ===
+\usepackage{xepersian}
+\settextfont[Scale=1.1]{IRNazanin}
+\setlatintextfont[Scale=1.0]{Linux Libertine O}
+\defpersianfont\nastaliq[Scale=1.5]{IranNastaliq}
+\defpersianfont\titr[Scale=1.3]{HM XKayhan Navaar}
+\defpersianfont\mitra[Scale=1.1]{IRMitra}
+
+% === Packages ===
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{longtable}
+\usepackage{booktabs}
+\usepackage{hyperref}
+\usepackage{enumitem}
+\usepackage{fancyhdr}
+\usepackage{geometry}
+\usepackage{xcolor}
+\usepackage{tikz}
+\usetikzlibrary{shapes,arrows,positioning,fit,backgrounds}
+
+\geometry{margin=2.5cm}
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue!60!black,
+    urlcolor=blue!50!black,
+    citecolor=green!50!black,
+}
+
+% === Page Style ===
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[RO,LE]{\small داشبورد مدیریت ریسک بانکی}
+\fancyhead[LO,RE]{\small مستندات فنی}
+\fancyfoot[C]{\thepage}
+\renewcommand{\headrulewidth}{0.5pt}
+
+% === Custom Commands ===
+\newcommand{\eng}[1]{\lr{\textenglish{\textit{#1}}}}
+\newcommand{\code}[1]{\lr{\texttt{#1}}}
+\newcommand{\riskmetric}[1]{\textbf{#1}}
+\newcommand{\tabcell}[1]{\small #1}
+
+% Persian-aware color boxes
+\definecolor{lightblue}{RGB}{235,245,255}
+\definecolor{lightgreen}{RGB}{235,255,240}
+\definecolor{lightred}{RGB}{255,240,240}
+\definecolor{lightyellow}{RGB}{255,252,230}
+
+% === Document ===
+\begin{document}
+
+% ===== TITLE PAGE =====
+\begin{titlepage}
+\begin{center}
+\vspace*{3cm}
+
+{\titr\Huge سامانه جامع مدیریت ریسک بانکی}
+
+\vspace{0.8cm}
+{\titr\Large مبتنی بر هوش مصنوعی}
+
+\vspace{1.5cm}
+{\large مستندات فنی و راهنمای کاربری}
+
+\vspace{1cm}
+\begin{tikzpicture}
+\node[draw=blue!50,fill=blue!5,rounded corners,inner sep=20pt,
+      minimum width=12cm,minimum height=3.5cm] {
+\begin{minipage}{10cm}
+\begin{center}
+{\small \textbf{نسخه ۱.۰.۰} \hspace{2cm} \textbf{تاریخ:} مرداد ۱۴۰۵}
+
+\vspace{0.5cm}
+\lr{\texttt{\small enterprise-bank-risk-dashboard}}
+\end{center}
+\end{minipage}
+};
+\end{tikzpicture}
+
+\vspace{1.5cm}
+
+\begin{tikzpicture}[node distance=1.8cm,auto,
+    block/.style={rectangle,draw=blue!60,fill=blue!5,rounded corners,
+                  text width=3.8cm,align=center,minimum height=1cm,font=\small},
+    arrow/.style={->,>=stealth,thick,blue!60}]
+\node[block] (data) {لایه داده\\Data Layer};
+\node[block,right=of data] (engine) {موتور ریسک\\Risk Engine};
+\node[block,right=of engine] (ai) {هوش مصنوعی\\AI/ML};
+\node[block,below=of engine] (ui) {داشبورد مدیریتی\\Executive Dashboard};
+\draw[arrow] (data) -- (engine);
+\draw[arrow] (engine) -- (ai);
+\draw[arrow] (engine) -- (ui);
+\end{tikzpicture}
+
+\vfill
+{\small تمامی حقوق محفوظ است © ۲۰۲۶}
+\end{center}
+\end{titlepage}
+
+% ===== TABLE OF CONTENTS =====
+\newpage
+\tableofcontents
+\newpage
+
+% ===================================================================
+\section{معرفی کلی}
+% ===================================================================
+
+این سامانه یک پلتفرم جامع مدیریت ریسک برای بانک‌های تجاری، بانک‌های دیجیتال و موسسات مالی است. این سیستم، اندازه‌گیری سنتی ریسک را با هوش مصنوعی، تحلیل‌های اقتصاد کلان و پیش‌بینی‌های تحلیلی ترکیب می‌کند.
+
+\subsection{حوزه‌های تحت پوشش}
+\begin{enumerate}[itemsep=4pt]
+    \item ریسک اعتباری پرتفوی (Credit Portfolio Risk)
+    \item ریسک تمرکز پرتفوی (Portfolio Concentration Risk)
+    \item عملکرد تعدیل‌شده با ریسک (Risk-Adjusted Performance)
+    \item ریسک بخشی و شرایط بازار (Sector \& Market Conditions)
+    \item ریسک اقتصاد کلان (Macroeconomic Risk)
+    \item ریسک نقدینگی و تأمین مالی (Liquidity \& Funding Risk)
+    \item ریسک کفایت سرمایه (Capital Adequacy Risk)
+    \item آزمون استرس و تحلیل سناریو (Stress Testing)
+    \item سامانه هشدار زودهنگام هوش مصنوعی (AI Early Warning)
+\end{enumerate}
+
+\subsection{منابع داده}
+\begin{itemize}
+    \item داده‌های واقعی وام‌های \eng{LendingClub} (۲۰۰۷--۲۰۱۸) با ۱۵۱ ستون و بیش از ۲ میلیون رکورد
+    \item داده‌های شبیه‌سازی‌شده بازار و اقتصاد کلان (در نبود داده واقعی)
+    \item امکان بارگذاری فایل \code{CSV/Excel} توسط کاربر
+\end{itemize}
+
+% ===================================================================
+\section{معماری سیستم}
+% ===================================================================
+
+سیستم از یک معماری لایه‌ای (Layered Architecture) پیروی می‌کند که در آن هر لایه مسئولیت مشخصی دارد:
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[
+    node distance=0.6cm,
+    layer/.style={rectangle,draw=blue!70,fill=blue!3,rounded corners,
+                  text width=13cm,align=center,minimum height=0.9cm,font=\small},
+    label/.style={font=\small\bfseries,text=blue!70!black},
+]
+\node[layer,fill=blue!10] (l1) {داده‌های خارجی: بانک مرکزی | بازارها | اخبار | آمار دولتی};
+\node[layer,below=of l1,fill=green!8] (l2) {\textbf{لایه داده (Data Layer)} — دریافت، تبدیل و کش داده};
+\node[layer,below=of l2,fill=yellow!8] (l3) {\textbf{موتور ریسک (Risk Engine)} — محاسبات مالی و آماری};
+\node[layer,below=of l3,fill=orange!8] (l4) {\textbf{هوش مصنوعی (AI Engine)} — یادگیری ماشین، تشخیص ناهنجاری، XAI};
+\node[layer,below=of l4,fill=red!5] (l5) {\textbf{رابط کاربری (UI)} — \eng{Streamlit} با ۱۰ صفحه داشبورد};
+\node[label,left=of l2,xshift=-4cm] {لایه‌ها};
+\end{tikzpicture}
+\caption{معماری لایه‌ای سامانه}
+\end{figure}
+
+\subsection{درخت فایل‌های پروژه}
+
+{\small\begin{latin}
+\begin{verbatim}
+bank-risk/
+├── app/                              # رابط کاربری Streamlit
+│   ├── main.py                       # نقطه ورود + ناوبری
+│   ├── components/
+│   │   └── ui.py                     # کارت‌های KPI، نمودارها، فرمت‌کننده‌ها
+│   └── pages/
+│       ├── executive_overview.py     # صفحه نمای کلی مدیریتی
+│       ├── credit_risk.py            # ریسک اعتباری
+│       ├── concentration_risk.py     # ریسک تمرکز
+│       ├── risk_adjusted_performance.py  # عملکرد تعدیل‌شده
+│       ├── sector_market.py          # شرایط بازار
+│       ├── macroeconomic.py          # اقتصاد کلان
+│       ├── liquidity_funding.py      # نقدینگی
+│       ├── capital_adequacy.py       # کفایت سرمایه
+│       ├── stress_testing.py         # آزمون استرس
+│       └── ai_early_warning.py       # هشدار زودهنگام AI
+├── risk_engine/                      # لایه محاسبات ریسک
+│   ├── credit.py                     # PD, EAD, LGD, ECL, NPL
+│   ├── concentration.py              # HHI, تمرکز بخشی/جغرافیایی
+│   ├── performance.py                # RAROC, NIM, ROA, ROE
+│   ├── market.py                     # VaR, ES, نوسان
+│   ├── macro.py                      # تحلیل اقتصاد کلان
+│   ├── liquidity.py                  # LCR, NSFR, شکاف نقدینگی
+│   ├── capital.py                    # CET1, CAR, اهرم
+│   ├── stress.py                     # ۸ سناریوی استرس
+│   └── ai_models.py                  # Gradient Boosting, Isolation Forest
+├── data/
+│   ├── lendingclub_adapter.py        # تبدیل داده LendingClub
+│   ├── sample_generator.py           # تولید داده شبیه‌سازی
+│   └── loader.py                     # بارگذاری با اولویت
+├── config/settings.py                # تنظیمات بانک
+└── sample_data/                      # ۲ فایل CSV واقعی LendingClub
+\end{verbatim}
+\end{latin}}
+
+% ===================================================================
+\section{لایه داده (Data Layer)}
+% ===================================================================
+
+این لایه مسئول دریافت، تبدیل و آماده‌سازی داده‌ها برای موتور ریسک است.
+
+\subsection{اولویت بارگذاری داده}
+
+سیستم به ترتیب اولویت زیر داده‌ها را بارگذاری می‌کند:
+
+\begin{enumerate}
+    \item داده‌های موجود در \code{session\_state} (کش حافظه)
+    \item داده‌های واقعی \eng{LendingClub} از پوشه \code{sample\_data/}
+    \item فایل بارگذاری‌شده توسط کاربر (\code{CSV/Excel})
+    \item داده‌های شبیه‌سازی‌شده (Synthetic)
+\end{enumerate}
+
+\subsection{تطبیق داده‌های \texorpdfstring{\eng{LendingClub}}{LendingClub}}
+
+داده‌های واقعی از \eng{LendingClub} دارای ۱۵۱ ستون است که به ستون‌های استاندارد داشبورد نگاشت می‌شود:
+
+\begin{longtable}{|p{5cm}|p{5cm}|p{4cm}|}
+\caption{نگاشت ستون‌های \lr{LendingClub} به ستون‌های داخلی}
+\hline
+\textbf{ستون \lr{LendingClub}} & \textbf{ستون داشبورد} & \textbf{توضیح} \\
+\hline
+\endfirsthead
+\hline
+\textbf{ستون \lr{LendingClub}} & \textbf{ستون داشبورد} & \textbf{توضیح} \\
+\hline
+\endhead
+\code{loan\_amnt} & \code{original\_amount} & مبلغ اصلی وام \\
+\code{out\_prncp} & \code{outstanding\_balance} & مانده جاری \\
+\code{int\_rate} & \code{interest\_rate} & نرخ بهره \\
+\code{grade} (A--G) & \code{risk\_grade} (AA--CC) & رتبه ریسک داخلی \\
+\code{purpose} & \code{sector} & بخش صنعت (۱۲ دسته) \\
+\code{addr\_state} & \code{region} & منطقه جغرافیایی \\
+\code{loan\_status} & \code{days\_past\_due}, \code{is\_npl} & وضعیت بازپرداخت \\
+\code{fico\_range\_low/high} & \code{credit\_score} & امتیاز اعتباری \\
+\code{annual\_inc} & \code{borrower\_income} & درآمد وام‌گیرنده \\
+\code{recoveries} & \code{recovery\_amount} & مبلغ بازیافتی \\
+\code{term} & \code{term\_months} & مدت وام (ماه) \\
+\code{issue\_d} & \code{origination\_date} & تاریخ شروع \\
+\hline
+\end{longtable}
+
+\subsection{محاسبات مشتق}
+
+پس از نگاشت ستون‌ها، مقادیر زیر محاسبه می‌شوند:
+
+\begin{itemize}
+    \item \textbf{احتمال نکول (PD):} بر اساس رتبه ریسک (\code{grade}) با نگاشت به مقادیر استاندارد بازل
+    \item \textbf{زیان در هنگام نکول (LGD):} از روی مبلغ بازیافتی (\code{recoveries}) محاسبه می‌شود
+    \item \textbf{زیان اعتباری مورد انتظار (ECL):} \lr{$PD \times EAD \times LGD$}
+    \item \textbf{پرچم‌های وضعیت:} \code{is\_npl}، \code{is\_defaulted}، \code{is\_written\_off}
+\end{itemize}
+
+% ===================================================================
+\section{لایه موتور ریسک (Risk Engine)}
+% ===================================================================
+
+این لایه شامل ۹ ماژول محاسباتی مستقل است که هر یک حوزه خاصی از ریسک را پوشش می‌دهد.
+
+\subsection{ریسک اعتباری (\code{credit.py})}
+
+شاخص‌های کلیدی:
+
+\begin{latin}
+\begin{itemize}
+    \item PD (Probability of Default)
+    \item EAD (Exposure at Default) 
+    \item LGD (Loss Given Default)
+    \item ECL = PD × EAD × LGD
+    \item UL (Unexpected Loss)
+    \item NPL Ratio
+    \item Default Rate, Delinquency Rate, Recovery Rate
+\end{itemize}
+\end{latin}
+
+\subsection{ریسک تمرکز (\code{concentration.py})}
+
+\begin{itemize}
+    \item \textbf{شاخص هرفیندال-هیرشمن (HHI):} برای وام‌گیرندگان، بخش‌ها و مناطق
+    \item \textbf{نسبت تک‌وام‌گیرنده:} بزرگترین وام‌گیرنده ÷ سرمایه
+    \item \textbf{سهم ۱۰ وام‌گیرنده برتر}
+    \item \textbf{نسبت تنوع‌بخشی (Diversification Benefit)}
+\end{itemize}
+
+\subsection{عملکرد تعدیل‌شده با ریسک (\code{performance.py})}
+
+\begin{latin}
+\begin{itemize}
+    \item RAROC = Risk-Adjusted Income ÷ Economic Capital
+    \item NIM = (Interest Income − Interest Expense) ÷ Earning Assets
+    \item ROA, ROE, Cost of Credit Risk
+\end{itemize}
+\end{latin}
+
+\subsection{ریسک بازار (\code{market.py})}
+
+\begin{itemize}
+    \item \textbf{ارزش در معرض ریسک (VaR):} سه روش — تاریخی، پارامتریک، مونت‌کارلو
+    \item \textbf{کسری مورد انتظار (Expected Shortfall / CVaR)}
+    \item \textbf{حداکثر کاهش (Maximum Drawdown)}
+    \item \textbf{نوسان سالانه (Annualized Volatility)}
+\end{itemize}
+
+\subsection{اقتصاد کلان (\code{macro.py})}
+
+\begin{itemize}
+    \item طبقه‌بندی چرخه اقتصادی (Expansion / Recovery / Slowdown / Recession)
+    \item برآورد احتمال بحران (Crisis Probability)
+    \item تحلیل حساسیت پرتفوی به عوامل کلان
+\end{itemize}
+
+\subsection{نقدینگی (\code{liquidity.py})}
+
+\begin{itemize}
+    \item \textbf{نسبت پوشش نقدینگی (LCR):} \lr{HQLA ÷ Net Cash Outflows (30-day)}
+    \item \textbf{نسبت تأمین مالی پایدار (NSFR)}
+    \item نردبان سررسید (Maturity Ladder)
+    \item تمرکز سپرده‌ها
+\end{itemize}
+
+\subsection{کفایت سرمایه (\code{capital.py})}
+
+\begin{itemize}
+    \item \textbf{نسبت CET1:} سرمایه اصلی ÷ دارایی‌های موزون به ریسک
+    \item \textbf{نسبت کفایت سرمایه کل (CAR)}
+    \item \textbf{نسبت اهرمی (Leverage Ratio)}
+    \item بافر حفاظتی سرمایه
+\end{itemize}
+
+\subsection{آزمون استرس (\code{stress.py})}
+
+هشت سناریوی از پیش تعریف‌شده:
+
+\begin{enumerate}[itemsep=2pt]
+    \item \textbf{پایه (Baseline)} — بدون شوک
+    \item \textbf{رکود اقتصادی} — کاهش ۴٪ تولید ناخالص داخلی
+    \item \textbf{شوک نرخ بهره} — افزایش ۳۰۰ نقطه پایه
+    \item \textbf{شوک تورمی} — افزایش ۵٪ تورم
+    \item \textbf{بحران ارزی} — کاهش ۳۰٪ ارزش پول ملی
+    \item \textbf{سقوط قیمت کالاها} — کاهش ۴۰٪ شاخص کالا
+    \item \textbf{بحران مسکن} — کاهش ۳۰٪ قیمت مسکن
+    \item \textbf{شوک ترکیبی شدید} — تمام شوک‌ها همزمان
+\end{enumerate}
+
+همچنین \textbf{آزمون استرس معکوس (Reverse Stress Test)} محاسبه می‌کند که چه سطحی از NPL یا کاهش GDP باعث می‌شود نسبت کفایت سرمایه به زیر حداقل نظارتی برسد.
+
+\subsection{هوش مصنوعی (\code{ai\_models.py})}
+
+\begin{itemize}
+    \item \textbf{مدل پیش‌بینی نکول:} \eng{Gradient Boosting Classifier} با مهندسی ویژگی
+    \item \textbf{تشخیص ناهنجاری:} \eng{Isolation Forest} برای شناسایی وام‌های غیرعادی
+    \item \textbf{تحلیل محرک‌های ریسک:} همبستگی ویژگی‌ها با وضعیت NPL
+    \item \textbf{اهمیت ویژگی (Feature Importance):} مبتنی بر مدل
+    \item \textbf{تولید هشدار:} هشدارهای خودکار با سطوح بحرانی، هشدار و نظارتی
+\end{itemize}
+
+% ===================================================================
+\section{لایه رابط کاربری (UI Layer)}
+% ===================================================================
+
+رابط کاربری با \eng{Streamlit} پیاده‌سازی شده و شامل ۱۰ صفحه است:
+
+\subsection{صفحه ۱: نمای کلی مدیریتی}
+
+نمای ۳۶۰ درجه برای مدیران ارشد:
+
+\begin{itemize}
+    \item ۶ کارت KPI اصلی (ECL، NPL، CAR، LCR، RAROC، هشدارهای AI)
+    \item ماتریس حرارتی ریسک (Heatmap) — شدت ریسک در ۶ دامنه
+    \item روند ۱۲ ماهه ECL و NPL
+    \item هشدارهای زودهنگام هوش مصنوعی
+    \item جدول ۱۰ وام‌گیرنده پرریسک
+    \item جدول فضای تنفسی نظارتی (Regulatory Headroom)
+\end{itemize}
+
+\subsection{صفحه ۲: ریسک اعتباری}
+
+\begin{itemize}
+    \item کارت‌های PD، LGD، EAD، ECL، UL
+    \item نرخ NPL، نرخ نکول، نرخ بازیافت، نرخ رد دین
+    \item نمودار قیفی معوقات (Delinquency Funnel)
+    \item توزیع PD بر اساس رتبه ریسک
+    \item تحلیل Vintage — نرخ نکول بر اساس سال صدور
+    \item ECL به تفکیک بخش صنعت
+    \item لیست نظارتی وام‌های پرریسک (Watchlist)
+\end{itemize}
+
+\subsection{صفحه ۳: ریسک تمرکز}
+
+\begin{itemize}
+    \item شاخص HHI برای وام‌گیرندگان، بخش‌ها و مناطق
+    \item نسبت بزرگترین وام‌گیرنده به سرمایه
+    \item نمودار درختی (Treemap) مواجهه به تفکیک بخش
+    \item نمودار میله‌ای ۲۰ وام‌گیرنده برتر
+    \item نمودار دایره‌ای پراکندگی جغرافیایی
+\end{itemize}
+
+\subsection{صفحه ۴: عملکرد تعدیل‌شده با ریسک}
+
+\begin{itemize}
+    \item کارت‌های RAROC، NIM، ROA، ROE، هزینه ریسک اعتباری
+    \item نمودار آبشاری (Waterfall) صورت سود و زیان
+    \item جدول تفصیلی عملکرد
+\end{itemize}
+
+\subsection{صفحه ۵: شرایط بازار}
+
+\begin{itemize}
+    \item نرخ سیاستی، اسپرد ۱۰Y-2Y، اسپرد اعتباری AAA/BBB/HY
+    \item نمودار منحنی بازده (Yield Curve)
+    \item نرخ ارز، نوسان ارز، شاخص کالا، قیمت نفت
+    \item شاخص قیمت مسکن، PMI، اعتماد مصرف‌کننده
+\end{itemize}
+
+\subsection{صفحه ۶: اقتصاد کلان}
+
+\begin{itemize}
+    \item رشد GDP، تورم، بیکاری، بدهی دولت
+    \item عقربه احتمال بحران (Crisis Probability Gauge)
+    \item تحلیل حساسیت پرتفوی به عوامل کلان
+    \item نمودارهای روند ۸ فصل اخیر
+\end{itemize}
+
+\subsection{صفحه ۷: نقدینگی و تأمین مالی}
+
+\begin{itemize}
+    \item عقربه LCR و NSFR
+    \item نردبان سررسید دارایی‌ها و بدهی‌ها
+    \item نمودار دایره‌ای تفکیک سپرده‌ها
+    \item جدول ۱۰ سپرده‌گذار بزرگ
+\end{itemize}
+
+\subsection{صفحه ۸: کفایت سرمایه}
+
+\begin{itemize}
+    \item کارت‌های CET1، Tier 1، CAR، اهرم
+    \item نمودار آبشاری ساختار سرمایه
+    \item عقربه CAR در برابر حداقل نظارتی
+    \item نمودار دایره‌ای ترکیب RWA
+\end{itemize}
+
+\subsection{صفحه ۹: آزمون استرس}
+
+\begin{itemize}
+    \item انتخاب‌گر سناریو (۸ سناریو)
+    \item پارامترهای شوک سناریو
+    \item کارت‌های NPL تحت استرس، ECL تحت استرس، CAR تحت استرس
+    \item نمودار فن (Fan Chart) مسیر ECL در ۵ سال
+    \item مقایسه تمام سناریوها
+    \item آزمون استرس معکوس
+\end{itemize}
+
+\subsection{صفحه ۱۰: هشدار زودهنگام هوش مصنوعی}
+
+\begin{itemize}
+    \item خلاصه هشدارها (بحرانی / هشدار / نظارتی)
+    \item کارت‌های عملکرد مدل (AUC، دقت، حساسیت، F1)
+    \item نمودار اهمیت ویژگی‌ها (Feature Importance)
+    \item نمودار محرک‌های ریسک (همبستگی با NPL)
+    \item نمودار پراکندگی تشخیص ناهنجاری
+    \item توزیع PD پیش‌بینی‌شده توسط AI
+\end{itemize}
+
+% ===================================================================
+\section{فناوری‌های متن‌باز مورد استفاده}
+% ===================================================================
+
+\begin{longtable}{|p{3.5cm}|p{3.5cm}|p{3.5cm}|p{3.5cm}|}
+\caption{فناوری‌های متن‌باز پروژه}
+\hline
+\textbf{حوزه} & \textbf{فناوری} & \textbf{مخزن} \\
+\hline
+\endfirsthead
+\hline
+\textbf{حوزه} & \textbf{فناوری} & \textbf{مخزن} \\
+\hline
+\endhead
+
+داشبورد & \code{Streamlit} & \lr{github.com/streamlit/streamlit} \\
+نمودارها & \code{Plotly} & \lr{github.com/plotly/plotly.py} \\
+داده‌کاوی & \code{Pandas}, \code{NumPy} & \lr{github.com/pandas-dev/pandas} \\
+یادگیری ماشین & \code{scikit-learn} & \lr{github.com/scikit-learn/scikit-learn} \\
+تشخیص ناهنجاری & \code{Isolation Forest} & کتابخانه \code{scikit-learn} \\
+تقویت گرادیان & \code{Gradient Boosting} & کتابخانه \code{scikit-learn} \\
+آمار & \code{SciPy} & \lr{github.com/scipy/scipy} \\
+تحلیل توضیح‌پذیر & \code{SHAP} & \lr{github.com/shap/shap} \\
+پیکربندی & \code{PyYAML} & \lr{github.com/yaml/pyyaml} \\
+\hline
+\end{longtable}
+
+% ===================================================================
+\section{راهنمای نصب و اجرا}
+% ===================================================================
+
+\subsection{پیش‌نیازها}
+\begin{itemize}
+    \item \eng{Python} نسخه ۳.۱۰ یا بالاتر
+    \item \code{pip} (مدیر بسته پایتون)
+\end{itemize}
+
+\subsection{نصب}
+
+{\small\begin{latin}
+\begin{verbatim}
+cd bank-risk/
+pip install -r requirements.txt
+\end{verbatim}
+\end{latin}}
+
+\subsection{اجرا}
+
+{\small\begin{latin}
+\begin{verbatim}
+PYTHONPATH=. streamlit run app/main.py
+\end{verbatim}
+\end{latin}}
+
+داشبورد در آدرس \lr{\texttt{http://localhost:8501}} قابل دسترسی خواهد بود.
+
+\subsection{بارگذاری داده سفارشی}
+
+از طریق نوار کناری (Sidebar) → بخش «مدیریت داده» → بارگذاری فایل \code{CSV} یا \code{Excel}.
+
+ستون‌های مورد انتظار: \code{outstanding\_balance}، \code{sector}، \code{region}، \code{risk\_grade}، \code{days\_past\_due}، \code{collateral\_value} و موارد مشابه.
+
+% ===================================================================
+\section{شاخص‌ها و فرمول‌های ریسک}
+% ===================================================================
+
+\subsection{ریسک اعتباری}
+
+\begin{latin}
+\begin{itemize}
+    \item ECL = PD × EAD × LGD
+    \item UL = ECL × multiplier (99.9\% confidence)
+    \item NPL Ratio = NPL Balance ÷ Total Loans
+    \item Recovery Rate = Recovered Amount ÷ Defaulted EAD
+\end{itemize}
+\end{latin}
+
+\subsection{ریسک تمرکز}
+
+\begin{latin}
+\begin{itemize}
+    \item HHI = \sum (exposure\_share_i)^2
+    \item Diversification Benefit = 1 − \sqrt{HHI}
+\end{itemize}
+\end{latin}
+
+\subsection{عملکرد تعدیل‌شده}
+
+\begin{latin}
+\begin{itemize}
+    \item RAROC = (Interest Income − Expenses − Credit Losses) ÷ Economic Capital
+    \item NIM = (Interest Income − Interest Expense) ÷ Earning Assets
+    \item Cost of Credit = Credit Losses ÷ Average Loans
+\end{itemize}
+\end{latin}
+
+\subsection{نقدینگی}
+
+\begin{latin}
+\begin{itemize}
+    \item LCR = HQLA ÷ Net Cash Outflows (30-day)
+    \item NSFR = Available Stable Funding ÷ Required Stable Funding
+\end{itemize}
+\end{latin}
+
+\subsection{کفایت سرمایه}
+
+\begin{latin}
+\begin{itemize}
+    \item CET1 Ratio = Core Capital ÷ RWA
+    \item Total CAR = Total Capital ÷ RWA
+    \item Leverage Ratio = Tier 1 Capital ÷ Total Exposure
+\end{itemize}
+\end{latin}
+
+% ===================================================================
+\section{نتیجه‌گیری}
+% ===================================================================
+
+این سامانه یک راه‌حل جامع و یکپارچه برای مدیریت ریسک بانکی ارائه می‌دهد که موارد زیر را پوشش می‌دهد:
+
+\begin{itemize}[itemsep=3pt]
+    \item \textbf{۹ حوزه ریسک} منطبق با الزامات کمیته بازل
+    \item \textbf{داده‌های واقعی} از \eng{LendingClub} با قابلیت تعویض
+    \item \textbf{موتور محاسباتی} با فرمول‌های استاندارد صنعت بانکی
+    \item \textbf{هوش مصنوعی} برای پیش‌بینی، تشخیص ناهنجاری و تحلیل محرک‌ها
+    \item \textbf{آزمون استرس} با ۸ سناریوی از پیش تعریف‌شده و استرس معکوس
+    \item \textbf{رابط کاربری تعاملی} با نمودارهای پویا و کارت‌های KPI
+    \item \textbf{معماری ماژولار} با قابلیت توسعه و نگهداری آسان
+\end{itemize}
+
+معماری لایه‌ای و ماژولار سیستم امکان جایگزینی هر بخش را بدون تأثیر بر سایر بخش‌ها فراهم می‌کند. این ویژگی به‌ویژه برای موسساتی که نیاز به سفارشی‌سازی مدل‌های ریسک یا منابع داده دارند، حیاتی است.
+
+\vspace{1cm}
+\begin{center}
+{\titr\Large ― پایان ―}
+\end{center}
+
+\end{document}
