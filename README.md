@@ -21,6 +21,8 @@ Then visit `http://localhost:8080`.
 | Early Warning System          | Risk Team               | Reduce defaults         |
 | Treasury & Liquidity Copilot  | Treasury Department     | Manage liquidity        |
 | Portfolio Risk Simulator      | CRO / Senior Management | Manage enterprise risk  |
+| Stress Testing                | Risk Team / CRO         | Regulatory capital      |
+| CFO AI Recommendations        | CFO / Senior Management | Capital & risk advice   |
 | AML Investigation Agent       | Compliance Team         | Reduce compliance risk  |
 
 ---

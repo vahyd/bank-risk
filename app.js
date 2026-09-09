@@ -103,8 +103,29 @@
     forecast: [{ m: 'M1', v: 40 }, { m: 'M2', v: 32 }, { m: 'M3', v: 22 }, { m: 'M4', v: 8 }, { m: 'M5', v: -14 }, { m: 'M6', v: -42 }, { m: 'M7', v: -78 }, { m: 'M8', v: -120 }],
   };
 
+  const stressScenarios = [
+    { id: 'recession', name: 'Recession', shock: 'GDP −3%', loss: 62, revenue: -18, capitalDelta: 1.8, lcrDelta: 14 },
+    { id: 'rate', name: 'Rate Hike', shock: 'Rates +300bp', loss: 95, revenue: -24, capitalDelta: 3.1, lcrDelta: 10 },
+    { id: 'housing', name: 'Housing Crash', shock: 'HPI −25%', loss: 78, revenue: -15, capitalDelta: 2.5, lcrDelta: 16 },
+    { id: 'currency', name: 'Currency Crisis', shock: 'FX −30%', loss: 41, revenue: -9, capitalDelta: 1.2, lcrDelta: 6 },
+    { id: 'cre', name: 'CRE Downturn', shock: 'CRE −20%', loss: 110, revenue: -12, capitalDelta: 3.8, lcrDelta: 22 },
+  ];
+  const severities = [
+    { id: 'baseline', name: 'Baseline', mult: 0 },
+    { id: 'adverse', name: 'Adverse', mult: 1.0 },
+    { id: 'severe', name: 'Severely Adverse', mult: 1.6 },
+  ];
+  const cfoRecs = [
+    { advisor: 'Treasury Advisor', action: 'Issue 5-year bond', confidence: 85, reason: 'Funding gap of $120M projected by Q2 2028; lock current rates.', impact: 'Saves ~$2.1M/yr vs floating' },
+    { advisor: 'Risk Manager', action: 'Increase CRE loan-loss provisions', confidence: 72, reason: 'CRE stress test drives capital below the 10.5% buffer.', impact: 'Reduces expected loss by $18M' },
+    { advisor: 'CFO Advisor', action: 'Refinance short-term debt', confidence: 78, reason: 'Rate outlook is rising; extend maturities now.', impact: 'Lowers interest-rate risk' },
+    { advisor: 'Risk Manager', action: 'Reduce retail-sector concentration', confidence: 68, reason: 'Retail default rates trend above portfolio average.', impact: 'Lowers concentration risk' },
+    { advisor: 'Treasury Advisor', action: 'Deploy excess liquidity into HQLA', confidence: 81, reason: 'LCR headroom supports higher-yield liquid assets.', impact: '+$1.4M/yr yield' },
+    { advisor: 'CFO Advisor', action: 'Raise additional Tier 1 capital', confidence: 64, reason: 'Severe stress consumes capital buffers.', impact: 'Restores 1.2% CET1 headroom' },
+  ];
+
   /* ---------- state ---------- */
-  const state = { page: 'Overview', client: 0, app: 0, severity: 'All', scenario: 2, alert: 0 };
+  const state = { page: 'Overview', client: 0, app: 0, severity: 'All', scenario: 2, alert: 0, stressScenario: 2, stressSeverity: 1 };
 
   /* ---------- helpers ---------- */
   const title = (name, desc, tag) => `<div class="title"><div><span>BANKRISK · ${state.page.toUpperCase()}</span><h1>${name}</h1><p>${desc}</p></div><i class="status">● ${tag}</i></div>`;
@@ -237,7 +258,39 @@
       </div>`;
   }
 
-  const pages = { Overview: overview, 'RM Copilot': rmCopilot, 'Credit Underwriting': underwriting, 'Early Warning': earlyWarning, Treasury: treasuryPage, 'Portfolio Risk': portfolioRisk, AML: amlPage };
+  function stressTesting() {
+    const s = stressScenarios[state.stressScenario];
+    const sev = severities[state.stressSeverity];
+    const loss = Math.round(s.loss * sev.mult);
+    const revenue = Math.round(s.revenue * sev.mult);
+    const capitalAfter = (14.2 - s.capitalDelta * sev.mult).toFixed(1);
+    const lcrAfter = Math.round(128 - s.lcrDelta * sev.mult);
+    const breach = parseFloat(capitalAfter) < 10.5;
+    el.innerHTML = title('Stress Testing', 'Regulatory stress tests across scenarios and severities.', 'RISK TEAM') +
+      `<div class="filters">${stressScenarios.map((sc, i) => `<button data-action="stress-scenario" data-idx="${i}" class="${state.stressScenario === i ? 'active' : ''}">${sc.name}</button>`).join('')}</div>` +
+      `<div class="filters" style="margin-top:8px">${severities.map((sv, i) => `<button data-action="stress-severity" data-idx="${i}" class="${state.stressSeverity === i ? 'active' : ''}">${sv.name}</button>`).join('')}</div>` +
+      `<div class="kpis">${kpi('Scenario', s.name, s.shock)}${kpi('Severity', sev.name, sev.mult === 0 ? 'No stress' : 'Impact ×' + sev.mult)}${kpi('Expected credit loss', '$' + loss + 'M', 'vs baseline', loss > 0 ? 'bad' : 'good')}${kpi('Net revenue impact', (revenue > 0 ? '+' : '') + '$' + revenue + 'M', 'Pre-provision', revenue < 0 ? 'bad' : 'good')}</div>` +
+      `<div class="grid">
+        <div class="card"><h2>Capital & liquidity</h2><p class="sub">${s.name} · ${sev.name}</p>
+          <div class="prod"><span>Capital ratio (CET1)</span><b>14.2% → ${capitalAfter}%</b></div>
+          <div class="prod"><span>Liquidity coverage ratio</span><b>128% → ${lcrAfter}%</b></div>
+          <div class="prod"><span>Regulatory CET1 minimum</span><b>10.5%</b></div>
+          <div class="prod"><span>Capital headroom after</span><b>${(parseFloat(capitalAfter) - 10.5).toFixed(1)}%</b></div>
+        </div>
+        <div class="card"><h2>All scenarios (Adverse)</h2><table><thead><tr><th>Scenario</th><th>Credit loss</th><th>CET1 after</th></tr></thead><tbody>
+          ${stressScenarios.map((sc) => `<tr><td><b>${sc.name}</b></td><td>$${sc.loss}M</td><td>${(14.2 - sc.capitalDelta).toFixed(1)}%</td></tr>`).join('')}
+        </tbody></table></div>
+      </div>
+      <div class="callout ${breach ? 'red' : sev.mult > 0 ? 'warn' : ''}"><b>${s.name} · ${sev.name}: ${breach ? 'Capital below minimum' : sev.mult === 0 ? 'No stress applied' : 'Within capital buffers'}</b><p>${sev.mult === 0 ? 'Baseline: CET1 14.2%, no credit losses.' : (breach ? 'CET1 falls to ' + capitalAfter + '%, below the 10.5% minimum — triggers a capital conservation review and dividend restrictions.' : 'CET1 holds at ' + capitalAfter + '%, above the 10.5% minimum.')} Expected credit loss $${loss}M.</p></div>`;
+  }
+
+  function cfoAI() {
+    el.innerHTML = title('CFO AI Recommendations', 'Executive AI advisor for capital, liquidity, and risk decisions.', 'SENIOR MANAGEMENT') +
+      `<div class="kpis">${kpi('Open recommendations', cfoRecs.length, 'Across 3 advisors')}${kpi('High confidence (≥80%)', cfoRecs.filter((r) => r.confidence >= 80).length, 'Act now')}${kpi('Est. value unlocked', '$24M', 'Annualized', 'good')}${kpi('Time to action', '2 weeks', 'Avg review', 'warn')}</div>` +
+      cfoRecs.map((r) => `<div class="card" style="margin-bottom:12px"><div style="display:flex;justify-content:space-between;gap:12px;align-items:flex-start"><div><span class="chip blue">${r.advisor}</span><h3 style="margin:8px 0 4px;font:700 14px 'Segoe UI',sans-serif">${r.action}</h3><p style="font-size:12px;color:var(--muted);margin:0">${r.reason}</p></div><span class="chip ${r.confidence >= 80 ? 'green' : r.confidence >= 70 ? 'amber' : 'red'}">${r.confidence}%</span></div><div class="meter" style="margin-top:12px"><span>Confidence</span><div class="bar"><i style="width:${r.confidence}%;background:${r.confidence >= 80 ? '#16a34a' : r.confidence >= 70 ? '#d97706' : '#dc2626'}"></i></div><b>${r.confidence}%</b></div><p style="font-size:12px;color:var(--green);margin:6px 0 0"><b>Impact:</b> ${r.impact}</p></div>`).join('');
+  }
+
+  const pages = { Overview: overview, 'RM Copilot': rmCopilot, 'Credit Underwriting': underwriting, 'Early Warning': earlyWarning, Treasury: treasuryPage, 'Portfolio Risk': portfolioRisk, 'Stress Testing': stressTesting, 'CFO AI': cfoAI, AML: amlPage };
 
   function render() {
     document.querySelectorAll('nav button').forEach((b) => b.classList.toggle('active', b.dataset.page === state.page));
@@ -260,6 +313,8 @@
     else if (a === 'scenario') { state.scenario = +t.dataset.idx; render(); }
     else if (a === 'alert') { state.alert = +t.dataset.idx; render(); }
     else if (a === 'severity') { state.severity = t.dataset.val; render(); }
+    else if (a === 'stress-scenario') { state.stressScenario = +t.dataset.idx; render(); }
+    else if (a === 'stress-severity') { state.stressSeverity = +t.dataset.idx; render(); }
   });
 
   render();
