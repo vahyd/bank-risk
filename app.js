@@ -125,7 +125,7 @@
   ];
 
   /* ---------- state ---------- */
-  const state = { page: 'Overview', client: 0, app: 0, severity: 'All', scenario: 2, alert: 0, stressScenario: 2, stressSeverity: 1 };
+  const state = { page: 'Overview', client: 0, app: 0, severity: 'All', scenario: 2, alert: 0, stressScenario: 2, stressSeverity: 1, partner: null };
 
   /* ---------- helpers ---------- */
   const title = (name, desc, tag) => `<div class="title"><div><span>BANKRISK · ${state.page.toUpperCase()}</span><h1>${name}</h1><p>${desc}</p></div><i class="status">● ${tag}</i></div>`;
@@ -290,14 +290,673 @@
       cfoRecs.map((r) => `<div class="card" style="margin-bottom:12px"><div style="display:flex;justify-content:space-between;gap:12px;align-items:flex-start"><div><span class="chip blue">${r.advisor}</span><h3 style="margin:8px 0 4px;font:700 14px 'Segoe UI',sans-serif">${r.action}</h3><p style="font-size:12px;color:var(--muted);margin:0">${r.reason}</p></div><span class="chip ${r.confidence >= 80 ? 'green' : r.confidence >= 70 ? 'amber' : 'red'}">${r.confidence}%</span></div><div class="meter" style="margin-top:12px"><span>Confidence</span><div class="bar"><i style="width:${r.confidence}%;background:${r.confidence >= 80 ? '#16a34a' : r.confidence >= 70 ? '#d97706' : '#dc2626'}"></i></div><b>${r.confidence}%</b></div><p style="font-size:12px;color:var(--green);margin:6px 0 0"><b>Impact:</b> ${r.impact}</p></div>`).join('');
   }
 
-  const pages = { Overview: overview, 'RM Copilot': rmCopilot, 'Credit Underwriting': underwriting, 'Early Warning': earlyWarning, Treasury: treasuryPage, 'Portfolio Risk': portfolioRisk, 'Stress Testing': stressTesting, 'CFO AI': cfoAI, AML: amlPage };
+  function digitalPartners() {
+    const partnerData = [
+      { icon: '◆', role: 'Executive Partner', desc: 'Strategic oversight, portfolio insights, board-ready summaries, macro risk overview', color: 'var(--blue)' },
+      { icon: '◇', role: 'Analyst Partner', desc: 'Automated Spreading, financial statement extraction, risk scoring, credit memos', color: 'var(--green)' },
+      { icon: '◎', role: 'Service Partner', desc: 'Client 360 view, relationship health, proactive outreach, meeting briefs', color: 'var(--amber)' },
+      { icon: '▪', role: 'Processor Partner', desc: 'Workflow automation, bottleneck removal, task tracking, escalation routing', color: 'var(--red)' },
+      { icon: '○', role: 'Client Partner', desc: 'Borrower self-service portal, document checklists, status updates, next steps', color: '#8b5cf6' },
+    ];
+    const sharedTools = [
+      { name: 'extract_financials', desc: 'Automated Spreading — pull structured financials from statements', icon: '📄' },
+      { name: 'monitor_credit', desc: 'Continuous Credit Monitoring — real-time risk score + alerts', icon: '📡' },
+      { name: 'run_credit_model', desc: 'PD model, credit score, grade assignment', icon: '📊' },
+      { name: 'scan_aml_alerts', desc: 'AML/Sanctions/PEP screening, SAR generation', icon: '🔍' },
+      { name: 'get_stress_test_result', desc: 'Regulatory capital projection under stress scenarios', icon: '⚡' },
+      { name: 'fetch_treasury_forecast', desc: 'Liquidity forecast and funding gap analysis', icon: '💧' },
+    ];
+    el.innerHTML = title('Digital Partners', 'nCino-inspired agentic operating system — five specialist agents routed by an orchestrator.', 'AOS') +
+      `<div class="filters"><button data-eng-auto="1" class="${state.partner ? '' : 'active'}">Auto route</button>${PARTNER_DEFS.map((p) => `<button data-eng="${esc(p.n)}" class="${state.partner === p.n ? 'active' : ''}">${esc(p.n)}</button>`).join('')}</div>` +
+      `<div class="card" style="margin-bottom:16px"><h2>Architecture</h2><p class="sub">Orchestrator routes intent → specialist agent → Dual Workforce checkpoint → shared tools/memory</p>
+        <div class="flow">${['User / Banker', 'Orchestrator (AOS)', 'Executive Partner', 'Analyst Partner', 'Service Partner', 'Processor Partner', 'Client Partner', 'Shared Tools'].map((s, i) => `<span class="step">${s}</span>${i < 8 ? '<span class="arrow">→</span>' : ''}`).join('')}</div></div>` +
+      `<div class="grid">
+        <div class="card"><h2>Specialist Partners</h2><p class="sub">Each partner is an independent agent node with its own system prompt</p>
+          ${partnerData.map((p) => `<div class="prod" style="border-left:3px solid ${p.color};padding-left:10px;cursor:pointer" data-eng="${p.role}"><span>${p.icon} <b>${p.role}</b></span><small style="display:block;color:var(--muted);margin-top:2px;font-size:11px">${p.desc}</small></div>`).join('')}
+          <div class="callout" style="margin-top:14px"><b>Router behavior</b><p>Intent keywords route queries: strategy/portfolio → Executive; credit/risk/financial → Analyst; client/borrower → Service; workflow/task → Processor; documents/checklist → Client. Page context acts as fallback.</p></div>
+        </div>
+        <div class="card"><h2>Shared Tools & Memory</h2><p class="sub">All agents access the same toolset and state store</p>
+          ${sharedTools.map((t) => `<div class="prod"><span><code style="font-size:11px;background:var(--navy);color:#c7dbff;border-radius:4px;padding:1px 5px">${t.icon} ${t.name}</code></span><span style="font-size:11px;color:var(--muted)">${t.desc}</span></div>`).join('')}
+          <div class="callout warn" style="margin-top:14px"><b>Dual Workforce</b><p>When risk exceeds the policy threshold, the system pauses and requires a human banker to approve or reject before proceeding. Every decision is logged in the audit trail.</p></div>
+        </div>
+      </div>`;
+    el.querySelectorAll('[data-eng],[data-eng-auto]').forEach((c) => {
+      c.onclick = () => {
+        if (c.dataset.engAuto !== undefined) { state.partner = null; render(); return; }
+        state.partner = c.dataset.eng;
+        const p = PARTNER_DEFS.find((x) => x.n === state.partner);
+        openChat(`Act as the ${state.partner} — ${p ? p.r : ''} What should I do first?`);
+        render();
+      };
+    });
+  }
 
+  function fmtCell(v) {
+    if (v === undefined || v === null || v === '') return '<span style="color:var(--muted)">—</span>';
+    if (typeof v === 'number') {
+      if (Number.isInteger(v)) return String(v);
+      return v.toFixed(4).replace(/0+$/, '').replace(/\.$/, '');
+    }
+    return esc(v);
+  }
+
+  function datasetPage() {
+    const recordId = '18115815';
+    el.innerHTML = title('Zenodo Dataset', 'Synthetic firm-level credit-risk dataset — metadata, feature profile & sample preview fetched live from the Zenodo REST API (no full download).', 'LIVE API') +
+      `<div class="kpis" id="zenKpis">${kpi('Record', recordId, 'Zenodo ID')}${kpi('Source', 'Zenodo', 'Open repository')}${kpi('Fetch mode', 'Metadata + sample', 'No full download', 'good')}${kpi('Firms', '…', 'Loading…')}${kpi('Features', '…', 'Loading…')}</div>` +
+      `<div class="card" id="zenMeta"><h2>Dataset metadata</h2><p class="sub">Loading from Zenodo…</p></div>` +
+      `<div class="card" id="zenSample" style="margin-top:16px"><h2>Sample data</h2><p class="sub">Previewing the first rows — no full dataset downloaded</p><div style="padding:16px;color:var(--muted);font-size:12px">Fetching sample…</div></div>` +
+      `<div class="card" id="zenFeatures" style="margin-top:16px"><h2>Feature profile</h2><p class="sub">Loading…</p></div>`;
+
+    const metaBox = el.querySelector('#zenMeta');
+    const sampleBox = el.querySelector('#zenSample');
+    const kpiBox = el.querySelector('#zenKpis');
+    const featBox = el.querySelector('#zenFeatures');
+
+    Promise.all([
+      fetch(`${API}/api/zenodo/${recordId}`).then((r) => r.json()),
+      fetch(`${API}/api/zenodo/${recordId}/stats`).then((r) => r.json()).catch(() => null),
+    ]).then(([d, stats]) => {
+        if (d.error) throw new Error(d.error);
+        const mb = (d.total_size / (1024 * 1024)).toFixed(2);
+        const firms = stats && stats.firms ? stats.firms.toLocaleString() : '—';
+        const features = stats && stats.features ? stats.features : '—';
+        const featureNames = (stats && stats.columns) || [];
+        kpiBox.innerHTML = kpi('Views', (d.stats.views || 0).toLocaleString(), 'Zenodo total') +
+          kpi('Downloads', (d.stats.downloads || 0).toLocaleString(), 'Zenodo total') +
+          kpi('Files', d.files.length, 'Total ' + mb + ' MB') +
+          kpi('Firms', firms, stats ? 'Rows in source file' : 'Could not count') +
+          kpi('Features', features, stats ? 'Feature columns' : 'Could not count');
+        if (featureNames.length) {
+          featBox.innerHTML = `<h2>Feature profile</h2><p class="sub">${features} feature columns identified from the source file header</p>` +
+            `<div class="grid" style="gap:12px 24px;margin-top:8px">${featureNames.map((f) => `<div class="prod"><span><code style="font-size:11px;background:var(--navy);color:#c7dbff;border-radius:4px;padding:1px 5px">${esc(f)}</code></span></div>`).join('')}</div>`;
+        }
+        metaBox.innerHTML = `<h2>${esc(d.title)}</h2><p class="sub">${esc(d.resource_type)} · published ${esc(d.publication_date)}</p>
+          <div class="grid" style="gap:0 24px">
+            <div class="prod"><span>DOI</span><b>${esc(d.doi)}</b></div>
+            <div class="prod"><span>License</span><span class="chip green">${esc(d.license)}</span></div>
+            <div class="prod"><span>Access</span><b>${esc(String(d.access_right).toUpperCase())}</b></div>
+            <div class="prod"><span>Creator(s)</span><b>${esc(d.creators.join(', ') || 'N/A')}</b></div>
+          </div>
+          <h3 style="margin:16px 0 6px">Description</h3>
+          <p style="font-size:12px;color:var(--muted);line-height:1.6;margin:0">${esc(d.description.slice(0, 900))}${d.description.length > 900 ? '…' : ''}</p>
+          <h3 style="margin:16px 0 6px">Files (not downloaded)</h3>
+          ${d.files.map((f) => `<div class="prod"><span><code style="font-size:11px;background:var(--navy);color:#c7dbff;border-radius:4px;padding:1px 5px">${esc(f.key)}</code></span><b>${(f.size / (1024 * 1024)).toFixed(2)} MB</b></div>`).join('')}
+          <div class="callout"><b>Retrieved via the Zenodo REST API</b><p>No data files were downloaded — only metadata plus a small HTTP Range preview of the first file.</p></div>`;
+      })
+      .catch((e) => {
+        metaBox.innerHTML = `<h2>Dataset metadata</h2><div class="callout red"><b>Could not reach the backend</b><p>Start the server with <code>npm start</code> so the app can proxy the Zenodo API. (${esc(e.message)})</p></div>`;
+      });
+
+    fetch(`${API}/api/zenodo/${recordId}/sample`)
+      .then((r) => r.json())
+      .then((d) => {
+        if (d.error) throw new Error(d.error);
+        const cols = d.columns.slice(0, 13);
+        const kb = (d.bytesFetched / 1024).toFixed(0);
+        sampleBox.innerHTML = `<h2>Sample data — <code style="font-size:11px;background:var(--bg);padding:1px 5px;border-radius:4px">${esc(d.file || '')}</code></h2>
+          <p class="sub">First ${d.rows.length} rows · ${cols.length} columns · fetched ${kb} KB via HTTP Range (no full download)</p>
+          <div style="overflow:auto"><table><thead><tr>${cols.map((c) => `<th>${esc(c)}</th>`).join('')}</tr></thead><tbody>
+          ${d.rows.map((row) => `<tr>${cols.map((_, i) => `<td>${fmtCell(row[i])}</td>`).join('')}</tr>`).join('')}
+          </tbody></table></div>
+          <div class="callout warn"><b>Note on formatting</b><p>The source CSV uses European decimal commas (e.g. <code>"7229,321243"</code>); values are normalized to standard decimals for display. <b>Status</b> is the event indicator (1 = event/default, 0 = censored) and <b>hazard</b> is the modeled credit-risk hazard rate.</p></div>`;
+      })
+      .catch((e) => {
+        sampleBox.innerHTML = `<h2>Sample data</h2><div class="callout red"><b>Sample unavailable</b><p>${esc(e.message)}</p></div>`;
+      });
+  }
+
+  const pages = { Overview: overview, 'RM Copilot': rmCopilot, 'Credit Underwriting': underwriting, 'Early Warning': earlyWarning, Treasury: treasuryPage, 'Portfolio Risk': portfolioRisk, 'Stress Testing': stressTesting, 'CFO AI': cfoAI, AML: amlPage, 'Digital Partners': digitalPartners, Dataset: datasetPage };
+
+  /* ============ AI AGENT LAYER ============ */
+  const API = 'http://localhost:3000';
+  const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+  let backendOk = null;
+
+  async function checkBackend() {
+    try {
+      const r = await fetch(API + '/api/agent/health', { signal: AbortSignal.timeout(1200) });
+      const j = await r.json();
+      backendOk = Boolean(j.ok);
+    } catch (e) { backendOk = false; }
+  }
+
+  /* local deterministic agent engine (used when the backend is off) */
+  const AGENT_ROSTER = [
+    { n: 'Executive Partner', r: 'Strategic overview, portfolio insights, board-ready summaries' },
+    { n: 'Analyst Partner', r: 'Deep financial analysis, spreading, risk scoring, credit memos' },
+    { n: 'Service Partner', r: 'Client 360, relationship health, proactive outreach' },
+    { n: 'Processor Partner', r: 'Workflow automation, bottleneck removal, task tracking' },
+    { n: 'Client Partner', r: 'Borrower self-service, status, required documents, next steps' },
+    { n: 'Credit Underwriting Agent', r: 'Analyze financial statements, score credit, estimate PD' },
+    { n: 'Risk Assessment Agent', r: 'Early-warning detection, stress testing, capital adequacy' },
+    { n: 'Compliance (AML) Agent', r: 'Suspicious activity, sanctions/PEP screening, SARs' },
+    { n: 'Treasury & Liquidity Agent', r: 'Liquidity forecasting, funding gaps, ALM' },
+    { n: 'Relationship Manager Copilot', r: 'Client 360, cross-sell, meeting briefs' },
+    { n: 'CFO Advisor', r: 'Capital planning and executive recommendations' },
+  ];
+
+  const PARTNER_DEFS = AGENT_ROSTER.slice(0, 5);
+
+  /* Orchestrator (AOS) — routes a request to the right Digital Partner by intent */
+  function routePartner(text, page) {
+    if (state.partner && PARTNER_DEFS.some((p) => p.n === state.partner)) return state.partner;
+    const q = (text || '').toLowerCase();
+    if (/executive|strategy|portfolio|insight|board|macro|overview/.test(q)) return 'Executive Partner';
+    if (/analyz|spread|financial|risk|credit|underwrit|pd\b|score|loan/.test(q)) return 'Analyst Partner';
+    if (/client|borrower|customer|service|relationship|outreach/.test(q)) return 'Service Partner';
+    if (/process|workflow|bottleneck|automation|task|escalat|approval/.test(q)) return 'Processor Partner';
+    if (/document|what do i need|checklist|self.?service|apply|next steps/.test(q)) return 'Client Partner';
+    const byPage = {
+      'RM Copilot': 'Service Partner',
+      'Credit Underwriting': 'Analyst Partner',
+      'Early Warning': 'Analyst Partner',
+      Treasury: 'Analyst Partner',
+      'Portfolio Risk': 'Executive Partner',
+      'Stress Testing': 'Executive Partner',
+      'CFO AI': 'Executive Partner',
+      AML: 'Processor Partner',
+      'Digital Partners': 'Executive Partner',
+      Dataset: 'Analyst Partner',
+    };
+    return byPage[page] || 'Service Partner';
+  }
+
+  function currentContext() {
+    const p = state.page;
+    if (p === 'RM Copilot') { const c = clients[state.client]; return `RM Copilot · reviewing client ${c.name} (${c.industry}). Deposits ${money(c.deposits)}, loans ${money(c.loans)}, profitability ${money(c.profitability)}. Products: ${c.products.join(', ')}. Cross-sell candidates: ${c.suggestions.map((s) => s.p).join(', ')}. Risk: ${c.riskLabel}. Alerts: ${c.alerts.join('; ')}.`; }
+    if (p === 'Credit Underwriting') { const a = applications[state.app]; return `Credit Underwriting · evaluating ${a.id} ${a.name} (${a.industry}), $${a.requested}M requested. Score ${a.score}/100, PD ${a.pd}%, grade ${a.grade}. Metrics: ${a.metrics.map((m) => `${m[0]} ${m[1]}`).join('; ')}.`; }
+    if (p === 'Early Warning') { const w = watchlist.find((x) => x.severity === state.severity) || watchlist[0]; return `Early Warning · filter ${state.severity}. Example client ${w.client} risk ${w.risk}/100, distress ${w.distress}%. Drivers: ${w.drivers.join('; ')}.`; }
+    if (p === 'Treasury') return `Treasury · projected funding gap $${treasury.gap}M by ${treasury.date}. LCR 128%. Forecast: ${treasury.forecast.map((f) => `${f.m} ${f.v}`).join(', ')}. Recommendation: ${treasury.recommendation}.`;
+    if (p === 'Portfolio Risk') { const s = scenarios[state.scenario]; return `Portfolio Risk · scenario ${s.name} (${s.shock}). Credit loss +$${s.loss}M, CET1 ${s.before}%→${s.after}%.`; }
+    if (p === 'Stress Testing') { const s = stressScenarios[state.stressScenario]; const sv = severities[state.stressSeverity]; return `Stress Testing · ${s.name} (${s.shock}) at ${sv.name} severity. Loss $${Math.round(s.loss * sv.mult)}M, revenue $${Math.round(s.revenue * sv.mult)}M.`; }
+    if (p === 'CFO AI') return `CFO AI · top recommendation: ${cfoRecs[0].action} (${cfoRecs[0].confidence}% confidence, presented by ${cfoRecs[0].advisor}). ${cfoRecs[0].reason}`;
+    if (p === 'AML') { const a = alerts[state.alert]; return `AML · investigating ${a.alert} on ${a.customer}. Amount ${a.amount}, risk ${a.risk}. Note: ${a.note}`; }
+    if (p === 'Digital Partners') { return `Digital Partners · orchestration architecture. Active partner: ${state.partner || 'router (auto)'}. Five specialist roles: Executive, Analyst, Service, Processor, Client. Shared tools: extract_financials (Automated Spreading), monitor_credit (Continuous Credit Monitoring), run_credit_model, scan_aml_alerts, get_stress_test_result, fetch_treasury_forecast. Dual Workforce: human-review checkpoint for elevated risk.`; }
+    if (p === 'Dataset') return 'Zenodo Dataset · synthetic firm-level credit-risk data (record 18115815). ~20,000 synthetic firms with sectors, regions, financials, and credit hazard scores. Source: Zenodo REST API. Data NOT downloaded — only metadata + sample preview via HTTP Range.';
+    return 'Executive overview of the BankRisk platform across the commercial lending lifecycle.';
+  }
+
+  async function localAgent(query, context) {
+    const q = (query || '').toLowerCase();
+    const has = (...ks) => ks.some((k) => q.includes(k));
+
+    if (has('watchlist', 'early', 'warning', 'deteriorate', 'default')) {
+      const w = watchlist[0];
+      return {
+        summary: `Zeta Retail is the highest-watchlist name: risk score 81/100 with a 67% distress probability. Revenue decline and increased overdraft usage are the dominant triggers. Recommend a heightened monitoring plan and a repayment review within 30 days.`,
+        steps: [
+          { title: 'Scanned watchlist', detail: `Loaded ${watchlist.length} clients by severity` },
+          { title: 'Ranked by risk score', detail: `${w.client} tops the list at ${w.risk}/100` },
+          { title: 'Extracted deterioration drivers', detail: w.drivers.join('; ') },
+          { title: 'Recommended action', detail: 'Risk-team review and account-level restructuring' },
+        ],
+        tools: [
+          { name: 'query_database', args: 'watchlist, severity=High', status: 'complete' },
+          { name: 'run_credit_model', args: `portfolio: ${w.client}`, status: 'complete' },
+        ],
+        agents: [
+          { name: 'Risk Assessment Agent', role: 'scored distress probability', status: 'complete' },
+          { name: 'Relationship Manager Copilot', role: 'prepared client review notes', status: 'complete' },
+        ],
+        confidence: 86,
+        evidence: [`${w.client} risk score ${w.risk}/100`, `Distress probability ${w.distress}%`, `Drivers: ${w.drivers.slice(0, 2).join('; ')}`],
+        recommendations: ['Schedule a 30-day account review', 'Draft restructuring options', 'Notify relationship manager'],
+        routedTo: 'Analyst Partner',
+        humanApprovalNeeded: true,
+      };
+    }
+
+    if (has('aml', 'suspicious', 'compliance', 'sar', 'sanction', 'money', 'fraud', 'alert')) {
+      const a = alerts[state.alert] || alerts[0];
+      return {
+        summary: `${a.alert} on ${a.customer} ($${a.amount}) rates ${a.risk} risk. ${a.note} Recommendation: ${a.rec}.`,
+        steps: [
+          { title: 'Prioritized alert queue', detail: `${a.risk} severity promoted first` },
+          { title: 'Mapped transaction network', detail: '5 counterparties · 14 transactions · 3 high-risk jurisdictions' },
+          { title: 'Applied typology match', detail: a.alert },
+          { title: 'Drafted disposition', detail: a.rec },
+        ],
+        tools: [
+          { name: 'scan_aml_alerts', args: a.customer, status: 'complete' },
+          { name: 'monitor_credit', args: a.customer + ' · continuous', status: 'complete' },
+          { name: 'query_database', args: 'transactions, 30-day window', status: 'complete' },
+        ],
+        agents: [
+          { name: 'Compliance (AML) Agent', role: 'typology detection and risk scoring', status: 'complete' },
+          { name: 'Risk Assessment Agent', role: 'validated customer risk', status: 'complete' },
+        ],
+        confidence: a.risk === 'High' ? 93 : 78,
+        evidence: [`Volume ${a.amount}`, a.note, `Customer ${a.customer}`],
+        recommendations: [a.rec, 'Document rationale in audit trail', 'Re-score customer risk quarterly'],
+        routedTo: 'Processor Partner',
+        humanApprovalNeeded: a.risk !== 'Low',
+      };
+    }
+
+    if (has('treasury', 'liquidity', 'gap', 'funding', 'bond', 'lcr', 'nsfr', 'liquidity coverage')) {
+      return {
+        summary: `Projected funding gap of $${treasury.gap}M by ${treasury.date} with LCR at 128% and NSFR at 112%. Recommendation: ${treasury.recommendation} to lock in current rates and smooth the maturity profile.`,
+        steps: [
+          { title: 'Loaded liquidity forecast', detail: '8-month projected net funding positions' },
+          { title: 'Identified gap month', detail: `Gap crosses zero at M5, low of $${treasury.gap}M at M8` },
+          { title: 'Assessed LCR/NSFR headroom', detail: '128% / 112% vs regulatory floors' },
+          { title: 'Selected funding strategy', detail: treasury.recommendation },
+        ],
+        tools: [
+          { name: 'fetch_treasury_forecast', args: 'next 8 months', status: 'complete' },
+          { name: 'query_database', args: 'liquidity buffers', status: 'complete' },
+        ],
+        agents: [
+          { name: 'Treasury & Liquidity Agent', role: 'ran forecast and gap analysis', status: 'complete' },
+          { name: 'CFO Advisor', role: 'validated funding recommendation', status: 'complete' },
+        ],
+        confidence: 85,
+        evidence: [`Funding gap $${treasury.gap}M by ${treasury.date}`, 'LCR 128% headroom', 'Rate lock opportunity'],
+        recommendations: [treasury.recommendation, 'Review short-term maturity ladder', 'Deploy excess cash into HQLA'],
+        routedTo: 'Analyst Partner',
+        humanApprovalNeeded: false,
+      };
+    }
+
+    if (
+      q.includes('stress') || q.includes('capital') || q.includes('cet1') ||
+      q.includes('scenario') || q.includes('recession') || q.includes('severe') ||
+      q.includes('commercial real') || q.includes('breach') || q.includes('buffer')
+    ) {
+      const s = stressScenarios[state.stressScenario];
+      const breach = (14.2 - s.capitalDelta) < 10.5;
+      return {
+        summary: `Under ${s.name} (${s.shock}), expected credit loss is ~$${s.loss}M and CET1 falls from 14.2% to ${(14.2 - s.capitalDelta).toFixed(1)}% — ${breach ? 'below' : 'above'} the 10.5% regulatory minimum${breach ? ', triggering a capital conservation review' : ''}.`,
+        steps: [
+          { title: 'Loaded stress scenario', detail: `${s.name}: ${s.shock}` },
+          { title: 'Applied portfolio shocks', detail: `Credit loss +$${s.loss}M` },
+          { title: 'Projected capital impact', detail: `CET1 ${(14.2 - s.capitalDelta).toFixed(1)}% after stress` },
+          { title: 'Checked regulatory floor', detail: breach ? 'Breach → capital action required' : 'Within the 10.5% floor' },
+        ],
+        tools: [
+          { name: 'get_stress_test_result', args: s.name.toLowerCase(), status: 'complete' },
+          { name: 'run_credit_model', args: 'enterprise portfolio', status: 'complete' },
+        ],
+        agents: [
+          { name: 'Risk Assessment Agent', role: 'ran scenario and capital projection', status: 'complete' },
+          { name: 'CFO Advisor', role: 'translated to capital-planning action', status: 'complete' },
+        ],
+        confidence: 82,
+        evidence: [`$${s.loss}M expected credit loss`, `CET1 ${(14.2 - s.capitalDelta).toFixed(1)}%`, `${s.shock} shock applied`],
+        recommendations: breach
+          ? ['Increase loan-loss provisions', 'Raise additional Tier 1 capital', 'Reduce sector concentration']
+          : ['Maintain provisions', 'Monitor CRE segment closely', 'Run quarterly re-test'],
+        routedTo: 'Executive Partner',
+        humanApprovalNeeded: breach,
+      };
+    }
+
+    if (has('delta foods', 'credit', 'application', 'approve', 'underwrit', 'pd', 'score', 'loan')) {
+      const a = applications[state.app];
+      return {
+        summary: `${a.name} (${a.id}): score ${a.score}/100, PD ${a.pd}%, grade ${a.grade}. ${a.recommendation}. Model confidence ${a.confidence}%.`,
+        steps: [
+          { title: 'Pulled applicant records', detail: `${a.inputs.length} documents loaded` },
+          { title: 'Computed core ratios', detail: a.metrics.map((m) => `${m[0]} ${m[1]}`).join('; ') },
+          { title: 'Scored application', detail: `${a.score}/100 → grade ${a.grade}` },
+          { title: 'Drafted recommendation', detail: a.recommendation },
+        ],
+        tools: [
+          { name: 'extract_financials', args: `${a.id} · statements + tax returns`, status: 'complete' },
+          { name: 'run_credit_model', args: a.id + ' · Automated Spreading → PD model', status: 'complete' },
+          { name: 'monitor_credit', args: a.name + ' · continuous monitoring', status: 'complete' },
+        ],
+        agents: [
+          { name: 'Credit Underwriting Agent', role: 'Automated Spreading + financial analysis and scoring', status: 'complete' },
+          { name: 'Risk Assessment Agent', role: 'validated exposure', status: 'complete' },
+        ],
+        confidence: a.confidence,
+        evidence: a.metrics.slice(0, 3).map((m) => `${m[0]} ${m[1]}`),
+        recommendations: [a.recommendation, `Grade ${a.grade} · PD ${a.pd}%`, 'Attach audit trail to credit file'],
+        routedTo: 'Analyst Partner',
+        humanApprovalNeeded: !a.recommendation.startsWith('Approve'),
+      };
+    }
+
+    if (has('client', 'customer', 'deposit', 'deposits', 'profit', 'cross-sell', 'sell', 'esg', 'rm ')) {
+      const c = clients[state.client];
+      const rev = c.suggestions.reduce((a, s) => a + s.r, 0);
+      return {
+        summary: `${c.name} (${c.industry}) holds ${money(c.deposits)} in deposits and ${money(c.loans)} in loans with annual profitability of ${money(c.profitability)}. Risk is rated ${c.riskLabel}. Cross-sell potential: ${rev}K/yr. ${c.brief}`,
+        steps: [
+          { title: 'Built client 360', detail: `${money(c.deposits)} deposits · ${money(c.loans)} loans · ${money(c.profitability)} profit/yr` },
+          { title: 'Scored relationship profitability', detail: `${c.products.length} products held` },
+          { title: 'Matched next-best products', detail: c.suggestions.map((s) => s.p).join(', ') },
+          { title: 'Drafted meeting brief', detail: 'Key risks and opportunities surfaced' },
+        ],
+        tools: [
+          { name: 'query_database', args: `client_360, ${c.name}`, status: 'complete' },
+          { name: 'monitor_credit', args: c.name + ' · relationship health', status: 'complete' },
+          { name: 'run_credit_model', args: `relationship: ${c.name}`, status: 'complete' },
+        ],
+        agents: [
+          { name: 'Relationship Manager Copilot', role: 'client 360 and cross-sell engine', status: 'complete' },
+          { name: 'Risk Assessment Agent', role: 'validated risk label', status: 'complete' },
+        ],
+        confidence: 84,
+        evidence: [`Deposits ${money(c.deposits)}`, `Loans ${money(c.loans)}`, `Profitability ${money(c.profitability)}`],
+        recommendations: [`Close ${c.suggestions[0].p} (est. $${c.suggestions[0].r}K/yr)`, 'Review risk notifications before meeting', 'Log meeting brief to CRM'],
+        routedTo: 'Service Partner',
+        humanApprovalNeeded: false,
+      };
+    }
+
+    if (q.includes('zenodo') || q.includes('dataset') || q.includes('synthetic firm')) {
+      let firms = '~20,000';
+      let feats = '13';
+      let cols = [];
+      const stats = await fetch(`${API}/api/zenodo/18115815/stats`).then((r) => r.json()).catch(() => null);
+      if (stats && !stats.error && stats.firms) {
+        firms = stats.firms.toLocaleString();
+        feats = String(stats.features);
+        cols = stats.columns || [];
+      }
+      const colList = cols.length ? cols.join(', ') : 'Sector, Region, Leverage, Profit_Margin, hazard, Event_Time, Status';
+      return {
+        summary: `Zenodo record 18115815 holds a fully synthetic firm-level credit-risk dataset: exactly **${firms} firms** in the source file (\`firms_features_clean.csv\`) with **${feats} feature columns** — ${colList}. Companies span Services, Technology, Manufacturing, Retail, Energy, Finance, and more, in Europe, Latin America, and the USA. Key risk features include leverage, profit margin, R&D intensity, organizational complexity, a survival-model hazard score, and an event indicator (Status: 1 = event/default, 0 = censored). Because the data is synthetic, it is safe for model prototyping and UI demos, but must not be used as real customer data.`,
+        steps: [
+          { title: 'Hit the Zenodo REST API', detail: 'Fetched metadata only — no bulk download' },
+          { title: 'Counted rows in the source file', detail: `${firms} firms (header + data rows parsed server-side)` },
+          { title: 'Profile the schema', detail: `${feats} feature columns identified from the header` },
+          { title: 'Normalized European decimals', detail: '"7229,321243" → 7229.32' },
+        ],
+        tools: [
+          { name: 'query_database', args: 'zenodo/records/18115815', status: 'complete' },
+          { name: 'count_rows', args: 'firms_features_clean.csv → ' + firms + ' firms', status: 'complete' },
+          { name: 'count_features', args: 'header → ' + feats + ' columns', status: 'complete' },
+          { name: 'extract_financials', args: 'sample rows · Automated Spreading', status: 'complete' },
+        ],
+        agents: [
+          { name: 'Analyst Partner', role: 'profiled the dataset schema and risk fields', status: 'complete' },
+          { name: 'Processor Partner', role: 'counted firms and features in the source', status: 'complete' },
+          { name: 'Executive Partner', role: 'framed safe-use guidance', status: 'complete' },
+        ],
+        confidence: 92,
+        evidence: [`${firms} synthetic firms (exact row count)`, `${feats} feature columns: ${colList}`, 'Hazard score + event indicator (Status) columns'],
+        recommendations: ['Use only for prototyping / demos', 'Treat as synthetic — never use as real customer data', 'Load sample into the credit model sandbox'],
+        routedTo: 'Analyst Partner',
+        humanApprovalNeeded: false,
+      };
+    }
+
+    /* generic overview answer */
+    const s = scenarios[state.scenario];
+    return {
+      summary: `Executive view: 1,248 active clients, $2.4B loan book, weighted PD 2.6%, CET1 14.2%. Under the ${s.name} scenario (${s.shock}), credit losses rise $${s.loss}M and CET1 falls to ${s.after}%.`,
+      steps: [
+        { title: 'Aggregated portfolio KPIs', detail: 'Clients, loan book, PD, capital' },
+        { title: 'Ranked active risks', detail: 'Watchlist 37 · AML alerts 12' },
+        { title: 'Ran portfolio simulation', detail: `${s.name}: CET1 → ${s.after}%` },
+        { title: 'Synthesized executive summary', detail: 'Dashboards updated' },
+      ],
+      tools: [
+        { name: 'query_database', args: 'portfolio index', status: 'complete' },
+        { name: 'extract_financials', args: 'top 20 obligors · Automated Spreading', status: 'complete' },
+        { name: 'get_stress_test_result', args: s.name.toLowerCase(), status: 'complete' },
+      ],
+      agents: [
+        { name: 'Risk Assessment Agent', role: 'aggregated portfolio metrics', status: 'complete' },
+        { name: 'CFO Advisor', role: 'framed executive insight', status: 'complete' },
+      ],
+      confidence: 78,
+      evidence: [`CET1 ${s.before}% base`, `PD 2.6% portfolio`, `${s.loss}M loss in ${s.name}`],
+      recommendations: ['Review CPI dashboard', 'Review top watchlist names', 'Pre-read CFO AI recommendations'],
+      routedTo: routePartner(query, state.page),
+      humanApprovalNeeded: false,
+    };
+  }
+
+  async function agentAnalyze(query, context) {
+    if (backendOk) {
+      try {
+        const r = await fetch(API + '/api/agent/analyze', {
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ query, context }),
+        });
+        const j = await r.json();
+        if (j.error) throw new Error(j.error);
+        return overrideRoute(j);
+      } catch (e) { backendOk = false; }
+    }
+    return overrideRoute(await localAgent(query, context));
+  }
+
+  function overrideRoute(data) {
+    if (state.partner && PARTNER_DEFS.some((p) => p.n === state.partner)) {
+      data.routedTo = state.partner;
+    }
+    return data;
+  }
+
+  /* ---------- agent workflow renderer with progressive reveal ---------- */
+  function esc(s) { return String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c])); }
+
+  function agentRunHTML(data, heading) {
+    const dw = data.humanApprovalNeeded;
+    return `<div class="agent-run">
+      <div class="agent-head"><b>${esc(heading)}</b><span class="conf-label">conf ${data.confidence || 0}%</span></div>
+      <div class="agent-router" data-r="router">Orchestrator → <b>${esc(data.routedTo || 'Service Partner')}</b></div>
+      <ol class="agent-steps">${data.steps.map((s) => `<li data-r="step"><span class="dot">◇</span><div><div class="label">${esc(s.title)}</div><div class="detail">${esc(s.detail)}</div></div></li>`).join('')}</ol>
+      <div class="agent-tools">${data.tools.map((t) => `<div class="tool-call" data-r="tool"><span><b>${esc(t.name)}</b>(${esc(t.args)})</span><span class="status">queued</span></div>`).join('')}</div>
+      ${data.agents.length ? `<div class="agent-handoff">${data.agents.map((a) => `<span class="node" data-r="hand"><span class="dot">✦</span>${esc(a.name)}<small>${esc(a.role)}</small></span>`).join('')}</div>` : ''}
+      <div class="conf-box" data-r="conf"><b>${data.confidence || 0}%</b><div><div class="bar"><i style="width:0;background:${(data.confidence || 0) >= 80 ? '#16a34a' : (data.confidence || 0) >= 60 ? '#d97706' : '#dc2626'}"></i></div><small>model confidence</small></div></div>
+      <div data-r="evi">
+        <p style="font-size:12px;color:var(--muted);font-weight:700;margin:14px 0 4px">Evidence</p>
+        <ul class="evidence">${data.evidence.map((e) => `<li style="opacity:0">${esc(e)}</li>`).join('')}</ul>
+      </div>
+      <div data-r="recs">
+        <p style="font-size:12px;color:var(--muted);font-weight:700;margin:14px 0 6px">Recommended actions</p>
+        <div class="recs">${data.recommendations.map((r) => `<div class="rec" style="opacity:0">✓ ${esc(r)}</div>`).join('')}</div>
+      </div>
+      ${dw ? `<div class="dw-checkpoint" data-r="dw" style="opacity:0">
+        <div class="dw-icon">⚠ Dual Workforce Checkpoint</div>
+        <p>The analyst team elevated this case to a <b>human-in-the-loop review</b>. A banker must approve or reject before the recommendation proceeds.</p>
+        <div class="dw-actions">
+          <button class="dw-approve" data-dw="approve">✓ Approve</button>
+          <button class="dw-reject" data-dw="reject">✕ Reject</button>
+        </div>
+        <span class="dw-result"></span>
+      </div>` : ''}
+    </div>`;
+  }
+
+  async function animateAgentRun(el, data, heading) {
+    el.insertAdjacentHTML('beforeend', await agentRunHTML(data, heading));
+    const panel = el.lastElementChild;
+    const router = panel.querySelector('[data-r="router"]');
+    const steps = panel.querySelectorAll('[data-r="step"]');
+    const tools = panel.querySelectorAll('[data-r="tool"]');
+    const hands = panel.querySelectorAll('[data-r="hand"]');
+    const conf = panel.querySelector('[data-r="conf"]');
+    const evis = panel.querySelectorAll('[data-r="evi"] li');
+    const recs = panel.querySelectorAll('[data-r="recs"] .rec');
+    const dw = panel.querySelector('[data-r="dw"]');
+
+    if (router) { router.style.opacity = 0; }
+    steps.forEach((s) => s.classList.add('prep'));
+    tools.forEach((t) => { t.style.opacity = 0; });
+    hands.forEach((h) => { h.style.opacity = 0; });
+    if (conf) conf.style.opacity = 0;
+    if (dw) dw.style.opacity = 0;
+
+    await sleep(200);
+    if (router) { router.style.transition = 'opacity .3s'; router.style.opacity = 1; await sleep(220); }
+    for (const [i, s] of steps.entries()) {
+      s.classList.remove('prep');
+      s.classList.add('active');
+      if (i === steps.length - 1 && tools.length === 0) { s.classList.add('done'); }
+      s.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+      await sleep(620);
+      s.classList.replace('active', 'done');
+    }
+    for (const [i, t] of tools.entries()) {
+      t.style.opacity = 1;
+      const st = t.querySelector('.status');
+      st.textContent = 'running'; st.className = 'status running';
+      await sleep(450);
+      st.textContent = 'complete'; st.className = 'status complete';
+    }
+    for (const [i, h] of hands.entries()) {
+      h.style.opacity = 1;
+      if (i === hands.length - 1) { h.classList.add('active'); }
+      else { h.classList.add('done'); }
+      await sleep(400);
+      h.classList.add('done'); h.classList.remove('active');
+    }
+    if (conf) {
+      conf.style.opacity = 1;
+      const bar = conf.querySelector('.bar i');
+      await sleep(120);
+      bar.style.width = `${data.confidence || 0}%`;
+      bar.style.transition = 'width .9s ease';
+    }
+    for (const e of evis) { e.style.transition = 'opacity .3s'; e.style.opacity = 1; await sleep(70); }
+    await sleep(150);
+    for (const r of recs) { r.style.transition = 'opacity .3s'; r.style.opacity = 1; await sleep(90); }
+    if (dw) {
+      await sleep(300);
+      dw.style.transition = 'opacity .3s';
+      dw.style.opacity = 1;
+      dw.querySelectorAll('[data-dw]').forEach((btn) => {
+        btn.onclick = () => {
+          const verdict = btn.dataset.dw;
+          dw.querySelectorAll('[data-dw]').forEach((b) => { b.disabled = true; });
+          btn.classList.add('dw-selected');
+          const ts = new Date().toLocaleTimeString();
+          dw.querySelector('.dw-result').textContent = verdict === 'approve'
+            ? `✓ Approved by Risk Officer · ${ts}`
+            : `✕ Rejected — escalation queued · ${ts}`;
+          dw.querySelector('.dw-result').className = 'dw-result ' + verdict;
+        };
+      });
+    }
+    panel.querySelectorAll('.agent-steps, .agent-tools, .agent-handoff, [data-r="evi"], [data-r="recs"], .conf-box').forEach((x) => { x.style.visibility = 'visible'; });
+  }
+
+  /* ---------- per-page AI widget ---------- */
+  const AI_WIDGETS = {
+    'RM Copilot': ['What should I focus on with ' + clients[0].name + '?', 'Cross-sell ideas for ' + clients[0].name],
+    'Credit Underwriting': ['Summarize the current application?', 'What conditions should I attach?'],
+    'Early Warning': ['Which client is deteriorating fastest?', 'How to downgrade a watchlist name?'],
+    Treasury: ['When is the funding gap worst?', 'Should we issue a bond?'],
+    'Portfolio Risk': ['Most damaging scenario?', 'Which sector to de-risk?'],
+    'Stress Testing': ['Will we breach the CET1 floor?', 'What capital action first?'],
+    'CFO AI': ['What should the CFO act on today?', 'Trade-offs of raising AT1?'],
+    AML: ['What is the top alert?', 'Should we file a SAR?'],
+    'Digital Partners': ['How do the five partners divide work?', 'Which partner handles document collection?'],
+    Dataset: ['Summarize the dataset', 'Is sector risk evenly spread?', 'What drives the hazard score?'],
+    Overview: ['What is the top risk right now?', 'Summarize the platform'],
+  };
+
+  function addAgentWidget() {
+    const ctx = currentContext();
+    const suggestions = AI_WIDGETS[state.page] || ['Summarize this page'];
+    const widget = document.createElement('div');
+    widget.className = 'agent-run';
+    widget.id = 'pageWidget';
+    widget.innerHTML = `<div class="agent-head"><b>✦ Agent team — ${state.page}</b><span class="agent-status" data-ai="run"><span class="agent-pulse">●</span> Run AI analysis</span></div>
+      <p style="font-size:12px;color:var(--muted);margin:6px 0 0">Ask the agent team about this module. Results stream with reasoning steps, tool calls, and agent handoffs.</p>
+      <div class="chat-suggestions" style="padding:10px 0 0">${suggestions.map((s) => `<button data-ai="ask" data-q="${esc(s)}">${esc(s)}</button>`).join('')}</div>
+      <div data-result=""></div>`;
+    el.appendChild(widget);
+
+    widget.querySelector('[data-ai="run"]').onclick = async () => await runAgentInto(widget, 'AI analysis — ' + state.page, 'Run a full analysis on the current view. ' + ctx);
+    widget.querySelectorAll('[data-ai="ask"]').forEach((b) => {
+      b.onclick = () => widget.querySelector('[data-ai="run"]').click();
+    });
+  }
+
+  async function runAgentInto(container, heading, prompt) {
+    const resultBox = container.querySelector('[data-result]');
+    const runBtn = container.querySelector('[data-ai="run"]');
+    if (runBtn) { runBtn.disabled = true; runBtn.querySelector('.agent-pulse').classList.add('done'); }
+    await animateAgentRun(resultBox, await agentAnalyze(prompt, currentContext()), heading);
+    if (runBtn) { runBtn.disabled = false; runBtn.querySelector('.agent-pulse').classList.remove('done'); runBtn.querySelector('.agent-pulse').classList.add('done'); }
+  }
+
+  /* ---------- chat ---------- */
+  const chat = { messages: [{ role: 'system', content: 'You are the BankRisk agent team. Answer concisely with banking expertise and always state supporting evidence and confidence.' }], busy: false };
+  const chatBody = () => document.getElementById('chatBody');
+  const chatInput = () => document.getElementById('chatInput');
+  const chatSend = () => document.getElementById('chatSend');
+
+  function syncSuggestions() {
+    const box = document.getElementById('chatSuggestions');
+    box.innerHTML = (AI_WIDGETS[state.page] || ['Summarize this page']).slice(0, 2).map((s) => `<button data-q="${esc(s)}">${esc(s)}</button>`).join('');
+  }
+
+  function pushMsg(html, cls) {
+    const m = document.createElement('div');
+    m.className = 'msg ' + (cls || 'agent');
+    m.innerHTML = html;
+    chatBody().appendChild(m);
+    chatBody().scrollTop = chatBody().scrollHeight;
+    return m;
+  }
+
+  async function onSend(text) {
+    text = (text || '').trim();
+    if (!text || chat.busy) return;
+    chat.busy = true;
+    chatSend().disabled = true;
+    chatInput().disabled = true;
+    const ctx = currentContext();
+    pushMsg(esc(text), 'user');
+    const typing = pushMsg('<span class="dots"><i></i><i></i><i></i></span> <small style="color:var(--muted)">agent team working…</small>', 'typing');
+    const data = await agentAnalyze(text, ctx);
+    const stepsHtml = data.steps.length ? `<div class="trace">${data.steps.map((s) => `<span class="t">${esc(s.title)}</span>`).join('')}</div>` : '';
+    const agentsHtml = data.agents.length ? `<div class="trace">${data.agents.map((a) => `<span class="t" style="background:var(--green2);color:var(--green)">✧ ${esc(a.name)}</span>`).join('')}</div>` : '';
+    const routerHtml = `<div class="trace"><span class="t" style="background:var(--navy);color:#fff">Orchestrator → ${esc(data.routedTo || 'Service Partner')}</span></div>`;
+    const dwHtml = data.humanApprovalNeeded ? `<div class="dw-inline">⚠ <b>Human review required</b> — this case is escalated to a banker for approval.</div>` : '';
+    typing.outerHTML = `<div class="msg agent">${esc(data.summary)}
+      <div class="msg-foot"><span class="conf-pill" style="color:${data.confidence >= 80 ? 'var(--green)' : data.confidence >= 60 ? 'var(--amber)' : 'var(--red)'}">◆ ${data.confidence || 0}% confidence</span><span>${data.evidence.length} evidence · ${data.tools.length} tools · ${data.agents.length} agents</span></div>
+      ${routerHtml}${stepsHtml}${agentsHtml}${dwHtml}</div>`;
+    chatBody().scrollTop = chatBody().scrollHeight;
+    chat.busy = false;
+    chatSend().disabled = false;
+    chatInput().disabled = false;
+    chatInput().value = '';
+    chatInput().focus();
+  }
+
+  let chatTabEl = null, chatPanelEl = null;
+  function openChat(prefill) {
+    if (!chatPanelEl) { chatPanelEl = document.getElementById('chatPanel'); chatTabEl = document.getElementById('chatTab'); }
+    chatPanelEl.classList.add('open');
+    chatTabEl.style.display = 'none';
+    syncSuggestions();
+    if (prefill) { chatInput().value = prefill; }
+    chatInput().focus();
+  }
+
+  function initChat() {
+    const tab = document.getElementById('chatTab');
+    const panel = document.getElementById('chatPanel');
+    chatTabEl = tab; chatPanelEl = panel;
+    tab.onclick = () => openChat();
+    document.getElementById('chatClose').onclick = () => { panel.classList.remove('open'); tab.style.display = ''; };
+    chatSend().onclick = () => onSend(chatInput().value);
+    chatInput().addEventListener('keydown', (e) => { if (e.key === 'Enter') onSend(chatInput().value); });
+    document.getElementById('chatSuggestions').addEventListener('click', (e) => {
+      const b = e.target.closest('[data-q]');
+      if (b) onSend(b.dataset.q);
+    });
+  }
+
+  /* ============ render ============ */
   function render() {
     document.querySelectorAll('nav button').forEach((b) => b.classList.toggle('active', b.dataset.page === state.page));
     pages[state.page]();
+    addAgentWidget();
   }
 
-  /* ---------- events ---------- */
+  /* ============ events ============ */
   document.querySelectorAll('nav button').forEach((b) => {
     b.onclick = () => { state.page = b.dataset.page; render(); };
   });
@@ -317,5 +976,8 @@
     else if (a === 'stress-severity') { state.stressSeverity = +t.dataset.idx; render(); }
   });
 
-  render();
+  checkBackend().then(() => {
+    initChat();
+    render();
+  });
 })();

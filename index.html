@@ -20,6 +20,8 @@
       <button data-page="Stress Testing">▤ <span>Stress Testing</span></button>
       <button data-page="CFO AI">✦ <span>CFO AI</span></button>
       <button data-page="AML">◈ <span>AML</span></button>
+      <button data-page="Digital Partners">◇ <span>Digital Partners</span></button>
+      <button data-page="Dataset">◧ <span>Dataset</span></button>
     </nav>
     <div class="side-note">
       <small>SYSTEM STATUS</small>
@@ -39,6 +41,23 @@
     <section id="view"></section>
   </main>
 </div>
+
+<div class="chat-wrap">
+  <div class="chat-panel" id="chatPanel">
+    <div class="chat-head">
+      <div><b>BankRisk Copilot</b><small>AI agent team · live</small></div>
+      <button class="chat-close" id="chatClose">✕</button>
+    </div>
+    <div class="chat-body" id="chatBody"></div>
+    <div class="chat-suggestions" id="chatSuggestions"></div>
+    <div class="chat-input">
+      <input id="chatInput" type="text" placeholder="Ask a question… e.g. risk for Delta Foods?" autocomplete="off">
+      <button id="chatSend">Send</button>
+    </div>
+  </div>
+  <button class="chat-tab" id="chatTab">✦ <span>Ask the agent team</span> <span class="badge">AI</span></button>
+</div>
+
 <script src="app.js"></script>
 </body>
 </html>
