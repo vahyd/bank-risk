@@ -15,12 +15,12 @@
   ];
   const lifecycle = ['Prospect', 'Relationship Manager', 'Credit Underwriting', 'Loan Approval', 'Portfolio Monitoring', 'Treasury Management', 'Enterprise Risk Management'];
   const ranking = [
+    { name: 'Chief Risk Officer Agent', stars: 5 },
     { name: 'Credit Underwriting Agent', stars: 5 },
-    { name: 'Early Warning System', stars: 5 },
-    { name: 'Relationship Manager Copilot', stars: 5 },
-    { name: 'Treasury & Liquidity Copilot', stars: 4 },
-    { name: 'Portfolio Risk Simulator', stars: 4 },
-    { name: 'AML Investigation Agent', stars: 4 },
+    { name: 'Early Warning Agent', stars: 5 },
+    { name: 'Stress Testing Agent', stars: 5 },
+    { name: 'IFRS9 / CECL Agent', stars: 4 },
+    { name: 'Concentration Risk Agent', stars: 4 },
   ];
 
   const clients = [
@@ -124,27 +124,97 @@
     { advisor: 'CFO Advisor', action: 'Raise additional Tier 1 capital', confidence: 64, reason: 'Severe stress consumes capital buffers.', impact: 'Restores 1.2% CET1 headroom' },
   ];
 
+  /* ---------- Moody's Decision Intelligence data (new agents) ---------- */
+  const finRatios = [
+    ['Profitability', [['ROA', '4.8%'], ['ROE', '12.3%'], ['EBITDA margin', '22.4%'], ['Net margin', '9.1%']]],
+    ['Leverage', [['Debt / EBITDA', '2.9×'], ['Debt / Equity', '1.4×']]],
+    ['Liquidity', [['Current ratio', '1.38×'], ['Quick ratio', '0.91×'], ['Cash ratio', '0.22×']]],
+    ['Coverage', [['Interest coverage', '4.6×'], ['DSCR', '1.62×']]],
+  ];
+
+  const covenants = [
+    { name: 'Delta Foods Co.', term: 'Debt/EBITDA < 4.0×', actual: '2.9×', status: 'Compliant', tone: 'green' },
+    { name: 'Helios Hospitality', term: 'DSCR > 1.25×', actual: '1.12×', status: 'Breach', tone: 'red' },
+    { name: 'Nova Logistics', term: 'Debt/EBITDA < 4.0×', actual: '1.8×', status: 'Compliant', tone: 'green' },
+    { name: 'Vertex Retail', term: 'Min liquidity $2M', actual: '$0.9M', status: 'Breach', tone: 'red' },
+    { name: 'Aurora Manufacturing', term: 'DSCR > 1.25×', actual: '1.35×', status: 'Watchlist', tone: 'amber' },
+  ];
+
+  const industryRisk = [
+    { sector: 'Retail', growth: '−1.2%', competition: 'High', regulation: 'Rising', commodity: 'Low', score: 68, outlook: 'Negative' },
+    { sector: 'Energy', growth: '+2.4%', competition: 'Moderate', regulation: 'Rising', commodity: 'High', score: 55, outlook: 'Negative' },
+    { sector: 'Manufacturing', growth: '+1.1%', competition: 'Moderate', regulation: 'Stable', commodity: 'Moderate', score: 62, outlook: 'Neutral' },
+    { sector: 'Technology', growth: '+8.7%', competition: 'High', regulation: 'Moderate', commodity: 'Low', score: 41, outlook: 'Positive' },
+    { sector: 'Services', growth: '+2.9%', competition: 'Moderate', regulation: 'Stable', commodity: 'Low', score: 38, outlook: 'Neutral' },
+    { sector: 'Finance', growth: '+3.3%', competition: 'High', regulation: 'Rising', commodity: 'Low', score: 49, outlook: 'Neutral' },
+  ];
+
+  const macroCases = [
+    { case: 'Base Case', gdp: '+1.8%', inflation: '2.4%', rates: '4.50%', fx: 'Stable', unemp: '4.2%', re: '+1.0%', tone: 'green' },
+    { case: 'Upside Case', gdp: '+2.9%', inflation: '1.9%', rates: '3.75%', fx: 'Appreciates', unemp: '3.6%', re: '+3.5%', tone: 'green' },
+    { case: 'Downside Case', gdp: '−1.4%', inflation: '3.8%', rates: '5.50%', fx: 'Depreciates', unemp: '6.1%', re: '−8.0%', tone: 'red' },
+  ];
+
+  const concentration = {
+    borrowers: [['Delta Foods Co.', 6.2], ['Aurora Manufacturing', 5.1], ['Helios Hospitality', 4.4], ['Nova Logistics', 3.8], ['Vertex Retail', 3.1], ['Gamma Retail Group', 2.9], ['Epsilon Logistics', 2.4], ['Zeta Pharmaceuticals', 2.1], ['ABC Manufacturing', 1.9], ['Omega Trading Ltd', 1.6]],
+    industries: [['Retail', 24], ['Manufacturing', 21], ['Finance', 16], ['Energy', 14], ['Technology', 11], ['Services', 9]],
+    countries: [['USA', 52], ['Europe', 30], ['LatAm', 12], ['Other', 6]],
+  };
+
+  const ifrs9 = {
+    stages: [
+      { stage: 'Stage 1', def: 'Performing · 12-month ECL', ead: 1960, ecl: 24, coverage: '1.2%' },
+      { stage: 'Stage 2', def: 'Underperforming · lifetime ECL', ead: 348, ecl: 31, coverage: '8.9%' },
+      { stage: 'Stage 3', def: 'Credit-impaired · lifetime ECL', ead: 92, ecl: 37, coverage: '40.2%' },
+    ],
+    allowance: 92, provisionExpense: 18, coverageRatio: 3.8,
+  };
+
+  const pricingDeals = [
+    { deal: 'APP-1042 Delta Foods', pd: 2.8, lgd: 45, funding: 'SOFR + 1.9%', minSpread: '2.10%', targetSpread: '2.60%', raroc: 18.4, tone: 'green' },
+    { deal: 'APP-1043 Helios Hospitality', pd: 6.9, lgd: 50, funding: 'SOFR + 2.3%', minSpread: '3.40%', targetSpread: '3.90%', raroc: 11.2, tone: 'amber' },
+    { deal: 'APP-1044 Nova Logistics', pd: 1.4, lgd: 40, funding: 'SOFR + 1.7%', minSpread: '1.60%', targetSpread: '2.00%', raroc: 22.1, tone: 'green' },
+    { deal: 'APP-1045 Vertex Retail', pd: 12.5, lgd: 55, funding: 'SOFR + 2.8%', minSpread: '5.10%', targetSpread: 'Decline', raroc: 4.8, tone: 'red' },
+  ];
+
+  const capitalAlloc = {
+    economicCapital: 412, rwa: 11800, cet1: 14.2, rorac: 15.6, efficiency: 72,
+    byBusiness: [['Corporate lending', 6.4, 34], ['Commercial real estate', 5.2, 28], ['SME', 2.8, 22], ['Treasury & markets', 1.4, 16]],
+  };
+
+  const creditMemo = {
+    borrower: 'Delta Foods Co.',
+    overview: 'Food & beverage manufacturer · $9.8M loans outstanding · stable deposit base.',
+    financial: 'DSCR 1.62× · leverage 2.9× · current ratio 1.38× · gross margin 24.1%.',
+    industry: 'Food & beverage — resilient demand, moderate commodity exposure.',
+    risk: 'PD 2.8% · grade B+ · internal rating BB. Low-to-moderate credit risk.',
+    collateral: 'Personal guarantee + blanket lien on receivables and inventory.',
+    stress: 'Recession: DSCR degrades to 1.18× but remains above the 1.0× floor.',
+    recommendation: 'Approve $2.5M with conditions',
+    conditions: ['Personal guarantee', 'Quarterly covenant reporting', 'Minimum liquidity $2M'],
+  };
+
   /* ---------- state ---------- */
   const state = { page: 'Overview', client: 0, app: 0, severity: 'All', scenario: 2, alert: 0, stressScenario: 2, stressSeverity: 1, partner: null };
 
   /* ---------- helpers ---------- */
-  const title = (name, desc, tag) => `<div class="title"><div><span>BANKRISK · ${state.page.toUpperCase()}</span><h1>${name}</h1><p>${desc}</p></div><i class="status">● ${tag}</i></div>`;
+  const title = (name, desc, tag) => `<div class="title"><div><span>DECISION INTELLIGENCE · ${state.page.toUpperCase()}</span><h1>${name}</h1><p>${desc}</p></div><i class="status">● ${tag}</i></div>`;
   const kpi = (l, v, s, tone = '') => `<div class="kpi"><label>${l}</label><b class="${tone}">${v}</b><small>${s}</small></div>`;
   const chip = (tone, text) => `<span class="chip ${tone}">${text}</span>`;
 
   /* ---------- pages ---------- */
   function overview() {
-    el.innerHTML = title('Executive overview', 'An AI-powered operating system across the commercial lending lifecycle.', 'PRODUCTION') +
+    el.innerHTML = title('Executive overview', 'Corporate Banking Decision Intelligence — a Chief Risk Officer orchestrating 14 specialist agents.', 'PRODUCTION') +
       `<div class="kpis">${kpis.map((k) => kpi(k.label, k.value, k.sub)).join('')}</div>` +
-      `<div class="card"><h2>Lending lifecycle</h2><p class="sub">Every stage, augmented by an AI module</p>
+      `<div class="card"><h2>Lending lifecycle</h2><p class="sub">Every stage, augmented by a specialist agent</p>
         <div class="flow">${lifecycle.map((s, i) => `<span class="step">${s}</span>${i < lifecycle.length - 1 ? '<span class="arrow">→</span>' : ''}`).join('')}</div></div>` +
       `<div class="grid" style="margin-top:16px">
-        <div class="card"><h2>Module ranking</h2><p class="sub">By business impact</p>
-          <table><thead><tr><th>#</th><th>Module</th><th>Impact</th></tr></thead><tbody>
+        <div class="card"><h2>Agent ranking</h2><p class="sub">By business impact</p>
+          <table><thead><tr><th>#</th><th>Agent</th><th>Impact</th></tr></thead><tbody>
           ${ranking.map((r, i) => `<tr><td><b>${i + 1}</b></td><td>${r.name}</td><td class="stars">${'★'.repeat(r.stars)}${'☆'.repeat(5 - r.stars)}</td></tr>`).join('')}
           </tbody></table></div>
-        <div class="card"><h2>Platform vision</h2><p class="sub">Each module drives revenue or reduces loss</p>
-          ${[['Relationship Manager Copilot', 'Grow revenue'], ['Credit Underwriting Agent', 'Improve lending quality'], ['Early Warning System', 'Reduce defaults'], ['Treasury Copilot', 'Manage liquidity'], ['Portfolio Simulator', 'Manage enterprise risk'], ['AML Agent', 'Reduce compliance risk']].map((x) => `<div class="prod"><span>${x[0]}</span><b>${x[1]}</b></div>`).join('')}</div>
+        <div class="card"><h2>Platform vision</h2><p class="sub">Each agent drives revenue or reduces loss</p>
+          ${[['Credit Underwriting Agent', 'Improve lending quality'], ['Early Warning Agent', 'Reduce defaults'], ['IFRS9 / CECL Agent', 'Accurate provisioning'], ['Pricing Agent', 'Risk-adjusted returns'], ['Capital Allocation Agent', 'Capital efficiency'], ['Compliance & KYC Agent', 'Reduce compliance risk']].map((x) => `<div class="prod"><span>${x[0]}</span><b>${x[1]}</b></div>`).join('')}</div>
       </div>`;
   }
 
@@ -175,7 +245,7 @@
 
   function underwriting() {
     const a = applications[state.app];
-    el.innerHTML = title('SME Credit Underwriting Agent', 'AI-assisted credit decisions with a full audit trail.', 'CREDIT OFFICERS') +
+    el.innerHTML = title('Credit Underwriting Agent', 'PD, LGD, EAD and internal rating — AI-assisted credit decisions with a full audit trail.', 'CREDIT OFFICERS') +
       `<div class="split">
         <div class="card list"><h2>Application queue</h2><p class="sub">Select an application</p>
           <table><thead><tr><th>ID</th><th>Applicant</th><th>Request</th><th>Decision</th></tr></thead><tbody>
@@ -210,7 +280,7 @@
   function treasuryPage() {
     const t = treasury;
     const max = Math.max(...t.forecast.map((x) => Math.abs(x.v)));
-    el.innerHTML = title('Treasury & Liquidity Copilot', 'Liquidity forecasting, funding optimization, and ALM.', 'TREASURY') +
+    el.innerHTML = title('Treasury & Liquidity', 'Liquidity forecasting, funding optimization, and ALM.', 'TREASURY') +
       `<div class="kpis">${kpi('Projected funding gap', '$' + t.gap + 'M', 'Expected ' + t.date, 'bad')}${kpi('Liquidity coverage', '128%', 'LCR')}${kpi('Net stable funding', '112%', 'NSFR')}${kpi('Deposit outflow risk', 'Low', 'Stable base', 'good')}</div>` +
       `<div class="grid">
         <div class="card"><h2>Liquidity forecast</h2><p class="sub">Projected net funding position ($M)</p>
@@ -224,7 +294,7 @@
   function portfolioRisk() {
     const s = scenarios[state.scenario];
     const maxLoss = Math.max(...scenarios.map((x) => x.loss));
-    el.innerHTML = title('Portfolio Risk Simulator', 'Enterprise stress testing across adverse scenarios.', 'CRO / SENIOR MGMT') +
+    el.innerHTML = title('Portfolio Risk Agent', 'Monitor sector/geographic exposure, rating migration and expected-loss trends.', 'CRO / SENIOR MGMT') +
       `<div class="filters">${scenarios.map((sc, i) => `<button data-action="scenario" data-idx="${i}" class="${state.scenario === i ? 'active' : ''}">${sc.name}</button>`).join('')}</div>` +
       `<div class="kpis">${kpi('Scenario', s.name, s.shock)}${kpi('Expected credit loss', '+$' + s.loss + 'M', 'vs baseline', 'bad')}${kpi('Capital ratio', s.before + '% → ' + s.after + '%', 'CET1', s.after < 10.5 ? 'bad' : 'warn')}${kpi('Below 10.5% min?', s.after < 10.5 ? 'Yes' : 'No', 'Regulatory floor', s.after < 10.5 ? 'bad' : 'good')}</div>` +
       `<div class="grid">
@@ -239,7 +309,7 @@
 
   function amlPage() {
     const a = alerts[state.alert];
-    el.innerHTML = title('AML Investigation Agent', 'Detect and investigate suspicious activity.', 'COMPLIANCE') +
+    el.innerHTML = title('Compliance & KYC Agent', 'Perpetual KYC — sanctions, PEP, adverse media, UBO and AML detection.', 'COMPLIANCE') +
       `<div class="kpis">${kpi('Open alerts', '12', 'Case queue')}${kpi('High priority', '5', 'Escalate now', 'bad')}${kpi('SARs filed', '3', 'This quarter')}${kpi('False positive rate', '4.2%', 'Model precision', 'good')}</div>` +
       `<div class="split">
         <div class="card list"><h2>Alert queue</h2><p class="sub">Select an alert</p>
@@ -291,33 +361,23 @@
   }
 
   function digitalPartners() {
-    const partnerData = [
-      { icon: '◆', role: 'Executive Partner', desc: 'Strategic oversight, portfolio insights, board-ready summaries, macro risk overview', color: 'var(--blue)' },
-      { icon: '◇', role: 'Analyst Partner', desc: 'Automated Spreading, financial statement extraction, risk scoring, credit memos', color: 'var(--green)' },
-      { icon: '◎', role: 'Service Partner', desc: 'Client 360 view, relationship health, proactive outreach, meeting briefs', color: 'var(--amber)' },
-      { icon: '▪', role: 'Processor Partner', desc: 'Workflow automation, bottleneck removal, task tracking, escalation routing', color: 'var(--red)' },
-      { icon: '○', role: 'Client Partner', desc: 'Borrower self-service portal, document checklists, status updates, next steps', color: '#8b5cf6' },
+    const colors = ['var(--blue)', 'var(--green)', 'var(--amber)', 'var(--red)', '#8b5cf6', '#0ea5e9', '#f59e0b', '#10b981', '#ef4444', '#6366f1', '#14b8a6', '#f97316', '#ec4899', '#64748b', '#84cc16'];
+    const GLOBAL_RULES = [
+      'Explain reasoning', 'Cite data sources', 'Show calculations', 'Quantify uncertainty', 'Flag missing data',
+      'Maintain audit logs', 'Escalate material risks', 'Never override policy limits', 'Never approve loans automatically', 'Produce regulator-ready outputs',
     ];
-    const sharedTools = [
-      { name: 'extract_financials', desc: 'Automated Spreading — pull structured financials from statements', icon: '📄' },
-      { name: 'monitor_credit', desc: 'Continuous Credit Monitoring — real-time risk score + alerts', icon: '📡' },
-      { name: 'run_credit_model', desc: 'PD model, credit score, grade assignment', icon: '📊' },
-      { name: 'scan_aml_alerts', desc: 'AML/Sanctions/PEP screening, SAR generation', icon: '🔍' },
-      { name: 'get_stress_test_result', desc: 'Regulatory capital projection under stress scenarios', icon: '⚡' },
-      { name: 'fetch_treasury_forecast', desc: 'Liquidity forecast and funding gap analysis', icon: '💧' },
-    ];
-    el.innerHTML = title('Digital Partners', 'nCino-inspired agentic operating system — five specialist agents routed by an orchestrator.', 'AOS') +
+    el.innerHTML = title('Agent Architecture — Decision Intelligence', 'A Chief Risk Officer orchestrates 14 specialist agents, replicating Moody\'s Banking Decision Intelligence.', 'MULTI-AGENT') +
       `<div class="filters"><button data-eng-auto="1" class="${state.partner ? '' : 'active'}">Auto route</button>${PARTNER_DEFS.map((p) => `<button data-eng="${esc(p.n)}" class="${state.partner === p.n ? 'active' : ''}">${esc(p.n)}</button>`).join('')}</div>` +
-      `<div class="card" style="margin-bottom:16px"><h2>Architecture</h2><p class="sub">Orchestrator routes intent → specialist agent → Dual Workforce checkpoint → shared tools/memory</p>
-        <div class="flow">${['User / Banker', 'Orchestrator (AOS)', 'Executive Partner', 'Analyst Partner', 'Service Partner', 'Processor Partner', 'Client Partner', 'Shared Tools'].map((s, i) => `<span class="step">${s}</span>${i < 8 ? '<span class="arrow">→</span>' : ''}`).join('')}</div></div>` +
+      `<div class="card" style="margin-bottom:16px"><h2>Architecture</h2><p class="sub">User → Chief Risk Officer Agent (orchestrator) → 14 specialist agents → Dual Workforce checkpoint → loan committee</p>
+        <div class="flow">${['User / Banker', 'Chief Risk Officer Agent', '14 Specialist Agents', 'Dual Workforce Checkpoint', 'Loan Committee'].map((s, i) => `<span class="step">${s}</span>${i < 4 ? '<span class="arrow">→</span>' : ''}`).join('')}</div></div>` +
       `<div class="grid">
-        <div class="card"><h2>Specialist Partners</h2><p class="sub">Each partner is an independent agent node with its own system prompt</p>
-          ${partnerData.map((p) => `<div class="prod" style="border-left:3px solid ${p.color};padding-left:10px;cursor:pointer" data-eng="${p.role}"><span>${p.icon} <b>${p.role}</b></span><small style="display:block;color:var(--muted);margin-top:2px;font-size:11px">${p.desc}</small></div>`).join('')}
-          <div class="callout" style="margin-top:14px"><b>Router behavior</b><p>Intent keywords route queries: strategy/portfolio → Executive; credit/risk/financial → Analyst; client/borrower → Service; workflow/task → Processor; documents/checklist → Client. Page context acts as fallback.</p></div>
+        <div class="card"><h2>Agent team</h2><p class="sub">Each agent is an independent node with its own system prompt</p>
+          ${AGENT_ROSTER.map((p, i) => `<div class="prod" style="border-left:3px solid ${colors[i % colors.length]};padding-left:10px;cursor:pointer" data-eng="${esc(p.n)}"><span>${i === 0 ? '◆ ' : '◇ '}<b>${esc(p.n)}</b></span><small style="display:block;color:var(--muted);margin-top:2px;font-size:11px">${esc(p.r)}</small></div>`).join('')}
+          <div class="callout" style="margin-top:14px"><b>Router behavior</b><p>The Chief Risk Officer routes intent to the single most relevant specialist. Strategy/consolidation stays with the CRO; everything else is dispatched by keyword — covenant → Covenant Monitoring; pricing → Pricing; IFRS9/CECL → IFRS9 / CECL Agent; sanctions/KYC → Compliance & KYC; and so on.</p></div>
         </div>
-        <div class="card"><h2>Shared Tools & Memory</h2><p class="sub">All agents access the same toolset and state store</p>
-          ${sharedTools.map((t) => `<div class="prod"><span><code style="font-size:11px;background:var(--navy);color:#c7dbff;border-radius:4px;padding:1px 5px">${t.icon} ${t.name}</code></span><span style="font-size:11px;color:var(--muted)">${t.desc}</span></div>`).join('')}
-          <div class="callout warn" style="margin-top:14px"><b>Dual Workforce</b><p>When risk exceeds the policy threshold, the system pauses and requires a human banker to approve or reject before proceeding. Every decision is logged in the audit trail.</p></div>
+        <div class="card"><h2>Global rules</h2><p class="sub">Every agent must comply</p>
+          ${GLOBAL_RULES.map((r, i) => `<div class="prod"><span><b>${i + 1}.</b> ${r}</span></div>`).join('')}
+          <div class="callout warn" style="margin-top:14px"><b>Dual Workforce</b><p>When risk exceeds policy thresholds, the system pauses and requires a human banker to approve or reject before proceeding. The platform never makes final credit decisions; every decision is logged in the audit trail.</p></div>
         </div>
       </div>`;
     el.querySelectorAll('[data-eng],[data-eng-auto]').forEach((c) => {
@@ -330,6 +390,13 @@
       };
     });
   }
+
+  const TRAINED_LABELS = {
+    underwriting: 'Credit Underwriting', earlyWarning: 'Early Warning', rmCopilot: 'RM Copilot',
+    portfolioRisk: 'Portfolio Risk', stressTesting: 'Stress Testing', cfoAI: 'Capital Allocation', aml: 'Compliance & KYC',
+    treasury: 'Treasury & Liquidity', datasetAgent: 'Dataset', overview: 'Chief Risk Officer', digitalPartners: 'Agent Architecture',
+  };
+  const sectionLabel = (n) => TRAINED_LABELS[n] || n;
 
   function fmtCell(v) {
     if (v === undefined || v === null || v === '') return '<span style="color:var(--muted)">—</span>';
@@ -346,7 +413,8 @@
       `<div class="kpis" id="zenKpis">${kpi('Record', recordId, 'Zenodo ID')}${kpi('Source', 'Zenodo', 'Open repository')}${kpi('Fetch mode', 'Metadata + sample', 'No full download', 'good')}${kpi('Firms', '…', 'Loading…')}${kpi('Features', '…', 'Loading…')}</div>` +
       `<div class="card" id="zenMeta"><h2>Dataset metadata</h2><p class="sub">Loading from Zenodo…</p></div>` +
       `<div class="card" id="zenSample" style="margin-top:16px"><h2>Sample data</h2><p class="sub">Previewing the first rows — no full dataset downloaded</p><div style="padding:16px;color:var(--muted);font-size:12px">Fetching sample…</div></div>` +
-      `<div class="card" id="zenFeatures" style="margin-top:16px"><h2>Feature profile</h2><p class="sub">Loading…</p></div>`;
+      `<div class="card" id="zenFeatures" style="margin-top:16px"><h2>Feature profile</h2><p class="sub">Loading…</p></div>` +
+      `<div class="card" id="zenTrain" style="margin-top:16px"><h2>Trained AI agents</h2><p class="sub">Each module agent is trained on this dataset — one risk model, per-section knowledge</p><div style="padding:16px;color:var(--muted);font-size:12px">Checking training status…</div></div>`;
 
     const metaBox = el.querySelector('#zenMeta');
     const sampleBox = el.querySelector('#zenSample');
@@ -404,9 +472,147 @@
       .catch((e) => {
         sampleBox.innerHTML = `<h2>Sample data</h2><div class="callout red"><b>Sample unavailable</b><p>${esc(e.message)}</p></div>`;
       });
+
+    const trainBox = el.querySelector('#zenTrain');
+    async function loadTrained() {
+      const r = await fetch(`${API}/api/train/status`).then((x) => x.json()).catch(() => ({ error: 'Backend not running' }));
+      if (r.error) {
+        trainBox.innerHTML = `<h2>Trained AI agents</h2><div class="callout warn"><b>Training backend unavailable</b><p>Start the server with <code>npm start</code> and click Train to fit each module agent on Zenodo record 18115815.</p></div>
+          <button class="primary" style="margin-top:8px" data-train="1">Train agents</button>`;
+      } else {
+        const st = r.sections || [];
+        trainBox.innerHTML = `<h2>Trained AI agents</h2>
+          <p class="sub">${r.model.type} · R² ${r.model.r2} · corr ${r.model.corr} · trained on ${r.dataset.firms} firms · ${new Date(r.trainedAt).toLocaleString()}</p>
+          <div class="grid" style="gap:10px 16px;margin-top:8px">${st.map((s) =>
+            `<div class="prod"><span><b>${esc(sectionLabel(s.name))}</b><small style="display:block;color:var(--muted);margin-top:2px;font-size:11px">${esc(s.model)}</small></span><span style="font-size:11px;color:var(--muted);text-align:right">${esc(s.summary || '')}</span></div>`).join('')}
+          </div>
+          <div class="callout" style="margin-top:12px"><b>One model, ${st.length} grounded agents</b><p>Every module agent (Credit Underwriting, Early Warning, Stress Testing, AML, Treasury, RM Copilot, CFO, Portfolio Risk, Overview) answers from this single trained engine. Re-train to refresh derived knowledge.</p></div>
+          <button class="primary" style="margin-top:10px" data-train="2">↻ Re-train agents on dataset</button>
+          <span class="train-status" style="margin-left:10px;font-size:12px;color:var(--muted)"></span>`;
+      }
+      trainBox.querySelectorAll('[data-train]').forEach((b) => {
+        b.onclick = async () => {
+          b.disabled = true;
+          b.textContent = 'Training…';
+          const sr = trainBox.querySelector('.train-status');
+          try {
+            const rr = await fetch(`${API}/api/train`, { method: 'POST' });
+            const j = await rr.json();
+            if (!rr.ok) throw new Error(j.error || 'training failed');
+            if (sr) sr.textContent = `✓ Trained at ${new Date(j.trainedAt).toLocaleTimeString()} · R² ${j.model.r2}`;
+            await loadTrained();
+          } catch (e) {
+            if (sr) sr.textContent = '✕ ' + esc(e.message);
+          } finally {
+            b.disabled = false;
+            const btn = trainBox.querySelector('[data-train]');
+            if (btn) btn.textContent = btn.dataset.train === '2' ? '↻ Re-train agents on dataset' : 'Train agents';
+          }
+        };
+      });
+    }
+    loadTrained();
   }
 
-  const pages = { Overview: overview, 'RM Copilot': rmCopilot, 'Credit Underwriting': underwriting, 'Early Warning': earlyWarning, Treasury: treasuryPage, 'Portfolio Risk': portfolioRisk, 'Stress Testing': stressTesting, 'CFO AI': cfoAI, AML: amlPage, 'Digital Partners': digitalPartners, Dataset: datasetPage };
+  /* ---------- Moody's Decision Intelligence pages (new agents) ---------- */
+  function financialAnalysis() {
+    el.innerHTML = title('Financial Analysis Agent', 'Automated spreading and ratio analysis — profitability, leverage, liquidity, coverage.', 'CORPORATE BANKING') +
+      `<div class="kpis">${kpi('Financial strength', '78/100', 'Score', 'good')}${kpi('Trend', 'Improving', 'vs prior period', 'good')}${kpi('Peer benchmark', 'Above median', 'Sector comparison')}${kpi('Coverage', 'DSCR 1.62×', 'Above 1.25× floor', 'good')}</div>` +
+      `<div class="grid">${finRatios.map((g) => `<div class="card"><h2>${g[0]}</h2><p class="sub">Computed from spread statements</p>${g[1].map((r) => `<div class="prod"><span>${r[0]}</span><b>${r[1]}</b></div>`).join('')}</div>`).join('')}</div>` +
+      `<div class="callout"><b>Financial Strength Score 78/100</b><p>Trend analysis shows improving margins and stable leverage, benchmarked above the sector median. Coverage ratios comfortably exceed policy floors.</p></div>`;
+  }
+
+  function covenantMonitoring() {
+    const breaches = covenants.filter((c) => c.status === 'Breach').length;
+    el.innerHTML = title('Covenant Monitoring Agent', 'Track covenant compliance — Debt/EBITDA, DSCR and minimum liquidity.', 'CREDIT RISK') +
+      `<div class="kpis">${kpi('Covenants monitored', '14', 'Active')}${kpi('Compliant', String(covenants.filter((c) => c.status === 'Compliant').length), 'Within limits', 'good')}${kpi('Watchlist', String(covenants.filter((c) => c.status === 'Watchlist').length), 'Near limit', 'warn')}${kpi('Breaches', String(breaches), 'Escalate now', breaches ? 'bad' : 'good')}</div>` +
+      `<div class="card"><table><thead><tr><th>Obligor</th><th>Covenant</th><th>Actual</th><th>Status</th></tr></thead><tbody>
+        ${covenants.map((c) => `<tr><td><b>${c.name}</b></td><td>${c.term}</td><td><b>${c.actual}</b></td><td>${chip(c.tone, c.status)}</td></tr>`).join('')}
+      </tbody></table></div>` +
+      `<div class="callout ${breaches ? 'warn' : ''}"><b>${breaches ? breaches + ' covenant breach(es) require action' : 'All covenants within policy limits'}</b><p>Breaches auto-escalate to the Chief Risk Officer for a waiver or amendment decision. Every test is logged to the audit trail.</p></div>`;
+  }
+
+  function industryRiskPage() {
+    el.innerHTML = title('Industry Risk Agent', 'Assess industry conditions — growth, competition, regulation, commodity exposure.', 'PORTFOLIO') +
+      `<div class="card"><table><thead><tr><th>Sector</th><th>Growth</th><th>Competition</th><th>Regulation</th><th>Commodity</th><th>Risk score</th><th>Outlook</th></tr></thead><tbody>
+        ${industryRisk.map((s) => `<tr><td><b>${s.sector}</b></td><td>${s.growth}</td><td>${s.competition}</td><td>${s.regulation}</td><td>${s.commodity}</td><td><b>${s.score}/100</b></td><td>${chip(s.outlook === 'Positive' ? 'green' : s.outlook === 'Negative' ? 'red' : 'amber', s.outlook)}</td></tr>`).join('')}
+      </tbody></table></div>` +
+      `<div class="callout warn"><b>Concentration of risk in Retail & Energy</b><p>Both carry negative outlooks driven by competition, regulation and commodity exposure. Recommend tightening exposure and re-underwriting commodity-sensitive names.</p></div>`;
+  }
+
+  function macroeconomic() {
+    el.innerHTML = title('Macroeconomic Agent', 'Measure economic impact — GDP, inflation, rates, FX, unemployment, real estate.', 'ECONOMICS') +
+      `<div class="grid">${macroCases.map((m) => `<div class="card"><h2>${m.case}</h2><p class="sub">${m.tone === 'red' ? 'Adverse' : m.case === 'Upside Case' ? 'Optimistic' : 'Central'} scenario</p>
+        ${[['GDP', m.gdp], ['Inflation', m.inflation], ['Interest rates', m.rates], ['FX', m.fx], ['Unemployment', m.unemp], ['Real estate', m.re]].map((x) => `<div class="prod"><span>${x[0]}</span><b>${x[1]}</b></div>`).join('')}
+      </div>`).join('')}</div>` +
+      `<div class="callout"><b>Three-case macro framework</b><p>Base, upside and downside cases feed the Stress Testing Agent's scenarios (recession, rate shock, real-estate crash, FX crisis). Refresh monthly.</p></div>`;
+  }
+
+  function concentrationRisk() {
+    const maxB = Math.max(...concentration.borrowers.map((b) => b[1]));
+    el.innerHTML = title('Concentration Risk Agent', 'Identify excessive concentrations — industry, country, single name, corporate group.', 'PORTFOLIO') +
+      `<div class="kpis">${kpi('Top borrower', concentration.borrowers[0][0], concentration.borrowers[0][1] + '% of book', 'warn')}${kpi('Top industry', concentration.industries[0][0], concentration.industries[0][1] + '% of book')}${kpi('Top country', concentration.countries[0][0], concentration.countries[0][1] + '% of book')}${kpi('HHI (industry)', '1,242', 'Moderately concentrated', 'warn')}</div>` +
+      `<div class="grid">
+        <div class="card"><h2>Top borrowers (single name)</h2>${concentration.borrowers.map((b) => `<div class="prod"><span>${b[0]}</span><span style="width:100px"><div class="bar" style="width:100px"><i style="width:${(b[1] / maxB) * 100}%"></i></div></span><b>${b[1]}%</b></div>`).join('')}</div>
+        <div class="card"><h2>Top industries & countries</h2>${concentration.industries.map((x) => `<div class="prod"><span>${x[0]}</span><b>${x[1]}%</b></div>`).join('')}${concentration.countries.map((x) => `<div class="prod"><span>${x[0]}</span><b>${x[1]}%</b></div>`).join('')}</div>
+      </div>` +
+      `<div class="callout warn"><b>Single-name & sector concentration</b><p>Top 10 borrowers hold ~34% of the book; Retail alone is 24%. Set single-name limits and de-risk the largest sector exposures.</p></div>`;
+  }
+
+  function ifrs9Page() {
+    el.innerHTML = title('IFRS 9 / CECL Agent', 'Stage classification, 12-month vs lifetime ECL, and provision movement.', 'ACCOUNTING') +
+      `<div class="kpis">${kpi('Total allowance', '$' + ifrs9.allowance + 'M', 'ECL provision')}${kpi('Provision expense', '$' + ifrs9.provisionExpense + 'M', 'This period', 'bad')}${kpi('Coverage ratio', ifrs9.coverageRatio + '%', 'Allowance / EAD')}${kpi('Stage 3 coverage', '40.2%', 'Impaired', 'bad')}</div>` +
+      `<div class="card"><table><thead><tr><th>Stage</th><th>Definition</th><th>EAD ($M)</th><th>ECL ($M)</th><th>Coverage</th></tr></thead><tbody>
+        ${ifrs9.stages.map((s) => `<tr><td><b>${s.stage}</b></td><td>${s.def}</td><td>${s.ead}</td><td>${s.ecl}</td><td><b>${s.coverage}</b></td></tr>`).join('')}
+      </tbody></table></div>` +
+      `<div class="callout"><b>Provision movement</b><p>Stage 2 and Stage 3 use lifetime ECL; Stage 1 uses 12-month ECL. Total allowance $${ifrs9.allowance}M (coverage ${ifrs9.coverageRatio}%) is reconciled to the general ledger each period.</p></div>`;
+  }
+
+  function pricingPage() {
+    el.innerHTML = title('Pricing Agent', 'Risk-adjusted pricing — minimum spread, target spread and RAROC.', 'LOAN PRICING') +
+      `<div class="card"><table><thead><tr><th>Deal</th><th>PD</th><th>LGD</th><th>Funding</th><th>Min spread</th><th>Target spread</th><th>RAROC</th></tr></thead><tbody>
+        ${pricingDeals.map((d) => `<tr><td><b>${d.deal}</b></td><td>${d.pd}%</td><td>${d.lgd}%</td><td>${d.funding}</td><td><b>${d.minSpread}</b></td><td><b>${d.targetSpread}</b></td><td>${chip(d.raroc >= 15 ? 'green' : d.raroc >= 8 ? 'amber' : 'red', d.raroc + '%')}</td></tr>`).join('')}
+      </tbody></table></div>` +
+      `<div class="callout warn"><b>Pricing policy</b><p>RAROC below the 15% hurdle (e.g. Vertex Retail) requires a higher spread or relationship revenue to justify. Minimum spread = expected loss + funding + capital charge.</p></div>`;
+  }
+
+  function capitalAllocation() {
+    const maxR = Math.max(...capitalAlloc.byBusiness.map((b) => b[2]));
+    el.innerHTML = title('Capital Allocation Agent', 'Optimize capital — economic capital, RWA and capital consumption.', 'CAPITAL') +
+      `<div class="kpis">${kpi('Economic capital', '$' + capitalAlloc.economicCapital + 'M', 'Unexpected loss')}${kpi('RWA', '$' + (capitalAlloc.rwa / 1000).toFixed(1) + 'B', 'Risk-weighted assets')}${kpi('CET1 ratio', capitalAlloc.cet1 + '%', 'Regulatory capital')}${kpi('Capital efficiency', capitalAlloc.efficiency + '/100', 'Score', 'good')}</div>` +
+      `<div class="card"><h2>Capital by business line</h2><p class="sub">Return on risk-adjusted capital (RORAC) vs capital consumed</p>
+        ${capitalAlloc.byBusiness.map((b) => `<div class="prod"><span>${b[0]}</span><span style="width:120px"><div class="bar" style="width:120px"><i style="width:${(b[2] / maxR) * 100}%"></i></div></span><b>${b[1]}% RORAC</b></div>`).join('')}
+      </div>` +
+      `<div class="callout"><b>Allocation guidance</b><p>Shift capital toward corporate lending (RORAC 6.4%) and away from low-return CRE. Overall capital efficiency score ${capitalAlloc.efficiency}/100.</p></div>`;
+  }
+
+  function creditMemoPage() {
+    el.innerHTML = title('Credit Memo Agent', 'Generate credit-committee packages with a full audit trail.', 'CREDIT COMMITTEE') +
+      `<div class="card"><h2>${creditMemo.borrower}</h2><p class="sub">Loan-committee package · auto-generated</p>
+        ${[['Borrower overview', creditMemo.overview], ['Financial analysis', creditMemo.financial], ['Industry assessment', creditMemo.industry], ['Risk assessment', creditMemo.risk], ['Collateral', creditMemo.collateral], ['Stress testing', creditMemo.stress]].map((x) => `<div class="prod"><span><b>${x[0]}</b></span><span style="font-size:12px;color:var(--muted)">${x[1]}</span></div>`).join('')}
+      </div>` +
+      `<div class="callout"><b>Recommendation: ${creditMemo.recommendation}</b><p>Conditions: ${creditMemo.conditions.join(' · ')}.</p></div>`;
+  }
+
+  function creditCommittee() {
+    el.innerHTML = title('Credit Committee — Chief Risk Officer', 'Consolidated executive view: risk rating, key risks, actions, capital and loss impact.', 'CRO') +
+      `<div class="kpis">${kpi('Portfolio risk rating', 'Medium', 'Internal scale', 'warn')}${kpi('Expected loss', '$92M', 'Baseline ECL')}${kpi('Capital impact', '14.2% CET1', 'Above 10.5% floor', 'good')}${kpi('Open escalations', '9', 'Human review', 'bad')}</div>` +
+      `<div class="grid">
+        <div class="card"><h2>Key risks</h2><p class="sub">Prioritized by the CRO</p>${['Retail & CRE concentration above limits', 'Two covenant breaches (Helios, Vertex)', 'CRE stress breaches the 10.5% CET1 floor', 'High-severity AML alert (Omega Trading)'].map((r) => `<div class="prod"><span>⚠ ${r}</span></div>`).join('')}</div>
+        <div class="card"><h2>Recommended actions</h2><p class="sub">Loan-committee agenda</p>${['Raise CRE loan-loss provisions (~$18M)', 'Remediate breached covenants within 30 days', 'Set single-name limits on top obligors', 'Escalate AML case to compliance review'].map((r) => `<div class="prod"><span>✓ ${r}</span></div>`).join('')}</div>
+      </div>` +
+      `<div class="callout warn"><b>Dual Workforce</b><p>The platform never approves loans automatically. Elevated risks require a human banker to approve or reject; every decision is stamped into the audit trail.</p></div>`;
+  }
+
+  const pages = {
+    Overview: overview, 'Credit Committee': creditCommittee, 'Credit Underwriting': underwriting,
+    'Financial Analysis': financialAnalysis, 'Credit Memo': creditMemoPage, 'Early Warning': earlyWarning,
+    'Covenant Monitoring': covenantMonitoring, 'Portfolio Risk': portfolioRisk, 'Concentration Risk': concentrationRisk,
+    'Industry Risk': industryRiskPage, Macroeconomic: macroeconomic, 'Stress Testing': stressTesting,
+    'Capital Allocation': capitalAllocation, 'IFRS 9 / CECL': ifrs9Page, Pricing: pricingPage,
+    AML: amlPage, Treasury: treasuryPage, 'RM Copilot': rmCopilot, 'CFO AI': cfoAI,
+    'Digital Partners': digitalPartners, Dataset: datasetPage,
+  };
 
   /* ============ AI AGENT LAYER ============ */
   const API = 'http://localhost:3000';
@@ -423,63 +629,286 @@
 
   /* local deterministic agent engine (used when the backend is off) */
   const AGENT_ROSTER = [
-    { n: 'Executive Partner', r: 'Strategic overview, portfolio insights, board-ready summaries' },
-    { n: 'Analyst Partner', r: 'Deep financial analysis, spreading, risk scoring, credit memos' },
-    { n: 'Service Partner', r: 'Client 360, relationship health, proactive outreach' },
-    { n: 'Processor Partner', r: 'Workflow automation, bottleneck removal, task tracking' },
-    { n: 'Client Partner', r: 'Borrower self-service, status, required documents, next steps' },
-    { n: 'Credit Underwriting Agent', r: 'Analyze financial statements, score credit, estimate PD' },
-    { n: 'Risk Assessment Agent', r: 'Early-warning detection, stress testing, capital adequacy' },
-    { n: 'Compliance (AML) Agent', r: 'Suspicious activity, sanctions/PEP screening, SARs' },
-    { n: 'Treasury & Liquidity Agent', r: 'Liquidity forecasting, funding gaps, ALM' },
-    { n: 'Relationship Manager Copilot', r: 'Client 360, cross-sell, meeting briefs' },
-    { n: 'CFO Advisor', r: 'Capital planning and executive recommendations' },
+    { n: 'Chief Risk Officer Agent', r: 'Orchestrator — consolidates outputs, resolves conflicts, prioritizes risks, executive summaries, loan-committee packages' },
+    { n: 'Credit Underwriting Agent', r: 'PD, LGD, EAD, repayment capacity, leverage, liquidity → internal rating' },
+    { n: 'Financial Analysis Agent', r: 'Spreading & ratios — profitability, leverage, liquidity, coverage → financial strength score' },
+    { n: 'Portfolio Risk Agent', r: 'Sector/geographic exposure, rating migration, NPL & expected-loss trends' },
+    { n: 'Early Warning Agent', r: 'Deterioration before default — news, spreads, covenant breaches, payment delays → Red/Amber/Green' },
+    { n: 'Covenant Monitoring Agent', r: 'Debt/EBITDA < 4.0×, DSCR > 1.25×, minimum liquidity → Compliant/Watchlist/Breach' },
+    { n: 'Industry Risk Agent', r: 'Growth, competition, regulation, commodity exposure → industry risk score & outlook' },
+    { n: 'Macroeconomic Agent', r: 'GDP, inflation, rates, FX, unemployment, real estate → base/upside/downside' },
+    { n: 'Concentration Risk Agent', r: 'Industry, country, region, single-name, corporate-group concentration → top-10 flags' },
+    { n: 'IFRS9 / CECL Agent', r: 'Stage classification, 12-month & lifetime ECL, provision movement → allowance & coverage' },
+    { n: 'Pricing Agent', r: 'PD, LGD, capital usage, funding cost, relationship revenue → minimum/target spread, RAROC' },
+    { n: 'Capital Allocation Agent', r: 'Economic capital, RWA, capital consumption → capital efficiency score' },
+    { n: 'Compliance & KYC Agent', r: 'Sanctions, PEP, adverse media, UBO, AML → perpetual KYC & SAR' },
+    { n: 'Stress Testing Agent', r: 'Recession, rate shock, RE crash, FX, sector shock → PD, losses, capital, liquidity' },
+    { n: 'Credit Memo Agent', r: 'Borrower overview, financials, industry, risk, collateral, stress, recommendation, conditions' },
   ];
 
-  const PARTNER_DEFS = AGENT_ROSTER.slice(0, 5);
+  const PARTNER_DEFS = AGENT_ROSTER;
 
-  /* Orchestrator (AOS) — routes a request to the right Digital Partner by intent */
+  /* Orchestrator (Chief Risk Officer Agent) — routes a request to the right specialist agent by intent */
   function routePartner(text, page) {
     if (state.partner && PARTNER_DEFS.some((p) => p.n === state.partner)) return state.partner;
     const q = (text || '').toLowerCase();
-    if (/executive|strategy|portfolio|insight|board|macro|overview/.test(q)) return 'Executive Partner';
-    if (/analyz|spread|financial|risk|credit|underwrit|pd\b|score|loan/.test(q)) return 'Analyst Partner';
-    if (/client|borrower|customer|service|relationship|outreach/.test(q)) return 'Service Partner';
-    if (/process|workflow|bottleneck|automation|task|escalat|approval/.test(q)) return 'Processor Partner';
-    if (/document|what do i need|checklist|self.?service|apply|next steps/.test(q)) return 'Client Partner';
+    if (/covenant/.test(q)) return 'Covenant Monitoring Agent';
+    if (/concentration|single.?name|top 10|corporate group/.test(q)) return 'Concentration Risk Agent';
+    if (/ifrs|cecl|stage|provision|allowance|coverage ratio/.test(q)) return 'IFRS9 / CECL Agent';
+    if (/pricing|raroc|spread|funding cost|loan rate/.test(q)) return 'Pricing Agent';
+    if (/capital allocation|allocate|rwa|economic capital|efficiency/.test(q)) return 'Capital Allocation Agent';
+    if (/credit memo|committee|memo/.test(q)) return 'Credit Memo Agent';
+    if (/industry|sector outlook|competition|commodity/.test(q)) return 'Industry Risk Agent';
+    if (/macro|gdp|inflation|unemployment|interest rate|fx/.test(q)) return 'Macroeconomic Agent';
+    if (/spread|ratio|dscr|coverage|roa|roe|ebitda|financial analysis/.test(q)) return 'Financial Analysis Agent';
+    if (/underwrit|application|approve|decline|pd|grade|lgd|ead|score|loan/.test(q)) return 'Credit Underwriting Agent';
+    if (/early|warning|watchlist|deteriorat|distress|default/.test(q)) return 'Early Warning Agent';
+    if (/stress|scenario|recession|cet1|capital/.test(q)) return 'Stress Testing Agent';
+    if (/aml|suspicious|compliance|kyc|sanction|pep|ubo|sar|fraud/.test(q)) return 'Compliance & KYC Agent';
+    if (/portfolio|sector|exposure|npl|rating migration/.test(q)) return 'Portfolio Risk Agent';
     const byPage = {
-      'RM Copilot': 'Service Partner',
-      'Credit Underwriting': 'Analyst Partner',
-      'Early Warning': 'Analyst Partner',
-      Treasury: 'Analyst Partner',
-      'Portfolio Risk': 'Executive Partner',
-      'Stress Testing': 'Executive Partner',
-      'CFO AI': 'Executive Partner',
-      AML: 'Processor Partner',
-      'Digital Partners': 'Executive Partner',
-      Dataset: 'Analyst Partner',
+      Overview: 'Chief Risk Officer Agent',
+      'Credit Committee': 'Chief Risk Officer Agent',
+      'Credit Underwriting': 'Credit Underwriting Agent',
+      'Financial Analysis': 'Financial Analysis Agent',
+      'Credit Memo': 'Credit Memo Agent',
+      'Early Warning': 'Early Warning Agent',
+      'Covenant Monitoring': 'Covenant Monitoring Agent',
+      'Portfolio Risk': 'Portfolio Risk Agent',
+      'Concentration Risk': 'Concentration Risk Agent',
+      'Industry Risk': 'Industry Risk Agent',
+      Macroeconomic: 'Macroeconomic Agent',
+      'Stress Testing': 'Stress Testing Agent',
+      'Capital Allocation': 'Capital Allocation Agent',
+      'IFRS 9 / CECL': 'IFRS9 / CECL Agent',
+      Pricing: 'Pricing Agent',
+      AML: 'Compliance & KYC Agent',
+      Treasury: 'Macroeconomic Agent',
+      'RM Copilot': 'Chief Risk Officer Agent',
+      'CFO AI': 'Chief Risk Officer Agent',
+      'Digital Partners': 'Chief Risk Officer Agent',
+      Dataset: 'Credit Underwriting Agent',
     };
-    return byPage[page] || 'Service Partner';
+    return byPage[page] || 'Chief Risk Officer Agent';
   }
 
   function currentContext() {
     const p = state.page;
     if (p === 'RM Copilot') { const c = clients[state.client]; return `RM Copilot · reviewing client ${c.name} (${c.industry}). Deposits ${money(c.deposits)}, loans ${money(c.loans)}, profitability ${money(c.profitability)}. Products: ${c.products.join(', ')}. Cross-sell candidates: ${c.suggestions.map((s) => s.p).join(', ')}. Risk: ${c.riskLabel}. Alerts: ${c.alerts.join('; ')}.`; }
     if (p === 'Credit Underwriting') { const a = applications[state.app]; return `Credit Underwriting · evaluating ${a.id} ${a.name} (${a.industry}), $${a.requested}M requested. Score ${a.score}/100, PD ${a.pd}%, grade ${a.grade}. Metrics: ${a.metrics.map((m) => `${m[0]} ${m[1]}`).join('; ')}.`; }
+    if (p === 'Financial Analysis') return 'Financial Analysis · spreading and ratio analysis. Profitability: ROA 4.8%, ROE 12.3%, EBITDA margin 22.4%. Leverage: Debt/EBITDA 2.9×, Debt/Equity 1.4×. Liquidity: current 1.38×, quick 0.91×. Coverage: interest 4.6×, DSCR 1.62×.';
+    if (p === 'Credit Memo') return `Credit Memo · committee package for ${creditMemo.borrower}. ${creditMemo.overview} ${creditMemo.risk} Recommendation: ${creditMemo.recommendation}.`;
     if (p === 'Early Warning') { const w = watchlist.find((x) => x.severity === state.severity) || watchlist[0]; return `Early Warning · filter ${state.severity}. Example client ${w.client} risk ${w.risk}/100, distress ${w.distress}%. Drivers: ${w.drivers.join('; ')}.`; }
+    if (p === 'Covenant Monitoring') return `Covenant Monitoring · testing Debt/EBITDA < 4.0×, DSCR > 1.25× and minimum liquidity. ${covenants.map((c) => `${c.name}: ${c.term} → ${c.actual} (${c.status})`).join('; ')}.`;
     if (p === 'Treasury') return `Treasury · projected funding gap $${treasury.gap}M by ${treasury.date}. LCR 128%. Forecast: ${treasury.forecast.map((f) => `${f.m} ${f.v}`).join(', ')}. Recommendation: ${treasury.recommendation}.`;
     if (p === 'Portfolio Risk') { const s = scenarios[state.scenario]; return `Portfolio Risk · scenario ${s.name} (${s.shock}). Credit loss +$${s.loss}M, CET1 ${s.before}%→${s.after}%.`; }
+    if (p === 'Concentration Risk') return `Concentration Risk · top industries ${concentration.industries.slice(0, 3).map((x) => `${x[0]} ${x[1]}%`).join(', ')}; top countries ${concentration.countries.slice(0, 3).map((x) => `${x[0]} ${x[1]}%`).join(', ')}; top borrower ${concentration.borrowers[0][0]} ${concentration.borrowers[0][1]}%.`;
+    if (p === 'Industry Risk') return `Industry Risk · sector scores: ${industryRisk.map((s) => `${s.sector} ${s.score}/100 (${s.outlook})`).join(', ')}.`;
+    if (p === 'Macroeconomic') return `Macroeconomic · Base GDP +1.8%, inflation 2.4%, rates 4.50%. Upside GDP +2.9%. Downside GDP −1.4%, inflation 3.8%, rates 5.50%.`;
     if (p === 'Stress Testing') { const s = stressScenarios[state.stressScenario]; const sv = severities[state.stressSeverity]; return `Stress Testing · ${s.name} (${s.shock}) at ${sv.name} severity. Loss $${Math.round(s.loss * sv.mult)}M, revenue $${Math.round(s.revenue * sv.mult)}M.`; }
+    if (p === 'Capital Allocation') return `Capital Allocation · economic capital $${capitalAlloc.economicCapital}M, RWA $${(capitalAlloc.rwa / 1000).toFixed(1)}B, CET1 ${capitalAlloc.cet1}%, efficiency ${capitalAlloc.efficiency}/100.`;
+    if (p === 'IFRS 9 / CECL') return `IFRS 9 / CECL · allowance $${ifrs9.allowance}M, provision expense $${ifrs9.provisionExpense}M, coverage ${ifrs9.coverageRatio}%. Stages: ${ifrs9.stages.map((s) => `${s.stage} ECL $${s.ecl}M`).join(', ')}.`;
+    if (p === 'Pricing') return `Pricing · ${pricingDeals.map((d) => `${d.deal} min ${d.minSpread}, RAROC ${d.raroc}%`).join('; ')}.`;
     if (p === 'CFO AI') return `CFO AI · top recommendation: ${cfoRecs[0].action} (${cfoRecs[0].confidence}% confidence, presented by ${cfoRecs[0].advisor}). ${cfoRecs[0].reason}`;
-    if (p === 'AML') { const a = alerts[state.alert]; return `AML · investigating ${a.alert} on ${a.customer}. Amount ${a.amount}, risk ${a.risk}. Note: ${a.note}`; }
-    if (p === 'Digital Partners') { return `Digital Partners · orchestration architecture. Active partner: ${state.partner || 'router (auto)'}. Five specialist roles: Executive, Analyst, Service, Processor, Client. Shared tools: extract_financials (Automated Spreading), monitor_credit (Continuous Credit Monitoring), run_credit_model, scan_aml_alerts, get_stress_test_result, fetch_treasury_forecast. Dual Workforce: human-review checkpoint for elevated risk.`; }
-    if (p === 'Dataset') return 'Zenodo Dataset · synthetic firm-level credit-risk data (record 18115815). ~20,000 synthetic firms with sectors, regions, financials, and credit hazard scores. Source: Zenodo REST API. Data NOT downloaded — only metadata + sample preview via HTTP Range.';
-    return 'Executive overview of the BankRisk platform across the commercial lending lifecycle.';
+    if (p === 'Credit Committee') return 'Credit Committee (Chief Risk Officer) · consolidated view: portfolio risk rating Medium, expected loss $92M, CET1 14.2%, open escalations 9. Key risks: Retail/CRE concentration, covenant breaches, CRE stress breach, high-severity AML.';
+    if (p === 'AML') { const a = alerts[state.alert]; return `Compliance & KYC · investigating ${a.alert} on ${a.customer}. Amount ${a.amount}, risk ${a.risk}. Note: ${a.note}`; }
+    if (p === 'Digital Partners') { return `Agent Architecture · Chief Risk Officer orchestrates 14 specialist agents (Credit Underwriting, Financial Analysis, Portfolio Risk, Early Warning, Covenant Monitoring, Industry Risk, Macroeconomic, Concentration Risk, IFRS9/CECL, Pricing, Capital Allocation, Compliance & KYC, Stress Testing, Credit Memo). Shared tools: extract_financials, monitor_credit, monitor_covenants, run_credit_model, scan_aml_alerts, get_stress_test_result, fetch_treasury_forecast, price_loan, allocate_capital. Dual Workforce: human-review checkpoint for elevated risk.`; }
+    if (p === 'Dataset') return 'Zenodo Dataset · synthetic firm-level credit-risk data (record 18115815). 19,544 synthetic firms with sectors, regions, financials, and credit hazard scores. A ridge-regression risk model (R² 0.756, corr 0.886) is trained on this dataset and grounds every agent. Source: Zenodo REST API. Data downloaded to the backend for training; the UI shows metadata + sample preview via HTTP Range.';
+    return 'Corporate Banking Decision Intelligence — executive overview across the commercial lending lifecycle.';
   }
 
   async function localAgent(query, context) {
     const q = (query || '').toLowerCase();
     const has = (...ks) => ks.some((k) => q.includes(k));
+
+    if (has('covenant')) {
+      const breaches = covenants.filter((c) => c.status === 'Breach');
+      return {
+        summary: `Covenant Monitoring: ${breaches.length} breach(es) across the book — ${breaches.map((c) => `${c.name} (${c.term} → ${c.actual})`).join('; ') || 'none'}. Compliant / Watchlist / Breach statuses are re-tested each period and logged to the audit trail.`,
+        steps: [
+          { title: 'Loaded covenant terms', detail: 'Debt/EBITDA < 4.0× · DSCR > 1.25× · min liquidity' },
+          { title: 'Tested latest financials', detail: `${covenants.length} obligors assessed` },
+          { title: 'Flagged breaches', detail: `${breaches.length} breach(es) escalated` },
+        ],
+        tools: [{ name: 'monitor_covenants', args: 'book · quarterly', status: 'complete' }],
+        agents: [
+          { name: 'Covenant Monitoring Agent', role: 'tested covenants', status: 'complete' },
+          { name: 'Chief Risk Officer Agent', role: 'queued waiver decisions', status: 'complete' },
+        ],
+        confidence: 87,
+        evidence: breaches.map((c) => `${c.name} ${c.actual}`),
+        recommendations: ['Remediate breaches within 30 days', 'Escalate to credit committee', 'Log tests to the audit trail'],
+        routedTo: 'Covenant Monitoring Agent',
+        humanApprovalNeeded: breaches.length > 0,
+      };
+    }
+
+    if (has('concentration', 'single name', 'corporate group', 'top 10')) {
+      return {
+        summary: `Concentration Risk: top industries ${concentration.industries.slice(0, 3).map((x) => `${x[0]} ${x[1]}%`).join(', ')}; top borrower ${concentration.borrowers[0][0]} at ${concentration.borrowers[0][1]}% of the book. Recommend single-name limits and sector de-risking.`,
+        steps: [
+          { title: 'Segmented by industry/country', detail: '6 sectors × regions' },
+          { title: 'Ranked single names', detail: `${concentration.borrowers[0][0]} ${concentration.borrowers[0][1]}%` },
+          { title: 'Tested against limits', detail: '15% single-sector guideline' },
+        ],
+        tools: [{ name: 'query_database', args: 'exposure index', status: 'complete' }],
+        agents: [
+          { name: 'Concentration Risk Agent', role: 'measured sector/country/single-name concentration', status: 'complete' },
+          { name: 'Chief Risk Officer Agent', role: 'recommended limit-based de-risking', status: 'complete' },
+        ],
+        confidence: 86,
+        evidence: [`Top industry ${concentration.industries[0][0]} ${concentration.industries[0][1]}%`, `Top borrower ${concentration.borrowers[0][1]}%`],
+        recommendations: ['Set single-name limits', 'De-risk largest sector', 'Re-balance geographic mix'],
+        routedTo: 'Concentration Risk Agent',
+        humanApprovalNeeded: false,
+      };
+    }
+
+    if (has('ifrs', 'cecl', 'provision', 'allowance', 'coverage ratio')) {
+      return {
+        summary: `IFRS 9 / CECL: total allowance $${ifrs9.allowance}M (coverage ${ifrs9.coverageRatio}%). Stage 1 uses 12-month ECL; Stages 2–3 use lifetime ECL. Provision expense this period: $${ifrs9.provisionExpense}M.`,
+        steps: [
+          { title: 'Classified stages', detail: 'Stage 1 / Stage 2 / Stage 3' },
+          { title: 'Computed 12-month & lifetime ECL', detail: 'PD × LGD × EAD' },
+          { title: 'Derived allowance', detail: `$${ifrs9.allowance}M · coverage ${ifrs9.coverageRatio}%` },
+        ],
+        tools: [{ name: 'query_database', args: 'stage transition matrix', status: 'complete' }],
+        agents: [
+          { name: 'IFRS9 / CECL Agent', role: 'computed ECL and provision movement', status: 'complete' },
+          { name: 'Chief Risk Officer Agent', role: 'reviewed allowance for sign-off', status: 'complete' },
+        ],
+        confidence: 85,
+        evidence: [`Allowance $${ifrs9.allowance}M`, `Coverage ${ifrs9.coverageRatio}%`],
+        recommendations: ['Re-run staging each period', 'Document SICR triggers', 'Reconcile allowance to the GL'],
+        routedTo: 'IFRS9 / CECL Agent',
+        humanApprovalNeeded: false,
+      };
+    }
+
+    if (has('pricing', 'raroc', 'minimum spread', 'target spread', 'funding cost')) {
+      return {
+        summary: `Pricing: ${pricingDeals.map((d) => `${d.deal} min ${d.minSpread}, RAROC ${d.raroc}%`).join('; ')}. Deals below the 15% RAROC hurdle need a higher spread or relationship revenue.`,
+        steps: [
+          { title: 'Loaded PD/LGD/capital inputs', detail: 'risk-adjusted pricing model' },
+          { title: 'Solved minimum spread', detail: 'EL + funding + capital charge' },
+          { title: 'Ranked RAROC', detail: 'against 15% hurdle' },
+        ],
+        tools: [{ name: 'price_loan', args: 'current deals', status: 'complete' }],
+        agents: [
+          { name: 'Pricing Agent', role: 'computed minimum/target spread and RAROC', status: 'complete' },
+          { name: 'Chief Risk Officer Agent', role: 'validated against pricing policy', status: 'complete' },
+        ],
+        confidence: 83,
+        evidence: pricingDeals.slice(0, 2).map((d) => `${d.deal} RAROC ${d.raroc}%`),
+        recommendations: ['Re-price sub-hurdle deals', 'Bundle relationship revenue', 'Re-price on PD migration'],
+        routedTo: 'Pricing Agent',
+        humanApprovalNeeded: false,
+      };
+    }
+
+    if (has('capital allocation', 'allocate', 'economic capital', 'rwa', 'efficiency')) {
+      return {
+        summary: `Capital Allocation: economic capital $${capitalAlloc.economicCapital}M, RWA $${(capitalAlloc.rwa / 1000).toFixed(1)}B, CET1 ${capitalAlloc.cet1}%. Shift capital toward corporate lending (RORAC 6.4%) and away from low-return CRE.`,
+        steps: [
+          { title: 'Computed RWA', detail: 'credit + market + operational' },
+          { title: 'Estimated economic capital', detail: `$${capitalAlloc.economicCapital}M` },
+          { title: 'Scored capital efficiency', detail: `${capitalAlloc.efficiency}/100` },
+        ],
+        tools: [{ name: 'allocate_capital', args: 'business lines', status: 'complete' }],
+        agents: [
+          { name: 'Capital Allocation Agent', role: 'optimized capital across lines', status: 'complete' },
+          { name: 'Chief Risk Officer Agent', role: 'reviewed against capital plan', status: 'complete' },
+        ],
+        confidence: 84,
+        evidence: [`EC $${capitalAlloc.economicCapital}M`, `CET1 ${capitalAlloc.cet1}%`],
+        recommendations: ['Shift capital to high RORAC lines', 'Reduce CRE RWA density', 'Re-run allocation quarterly'],
+        routedTo: 'Capital Allocation Agent',
+        humanApprovalNeeded: false,
+      };
+    }
+
+    if (has('credit memo', 'committee', 'memo')) {
+      return {
+        summary: `Credit Memo for ${creditMemo.borrower}: ${creditMemo.overview} Recommendation: ${creditMemo.recommendation}. Conditions: ${creditMemo.conditions.join('; ')}.`,
+        steps: [
+          { title: 'Assembled borrower overview', detail: creditMemo.overview },
+          { title: 'Financial & industry assessment', detail: creditMemo.financial + ' ' + creditMemo.industry },
+          { title: 'Risk & stress', detail: creditMemo.risk + ' ' + creditMemo.stress },
+        ],
+        tools: [{ name: 'extract_financials', args: creditMemo.borrower, status: 'complete' }],
+        agents: [
+          { name: 'Credit Memo Agent', role: 'drafted the committee package', status: 'complete' },
+          { name: 'Chief Risk Officer Agent', role: 'final sign-off review', status: 'complete' },
+        ],
+        confidence: 89,
+        evidence: [creditMemo.risk, creditMemo.collateral],
+        recommendations: ['Circulate memo to committee', 'Attach conditions', 'Log decision to audit trail'],
+        routedTo: 'Credit Memo Agent',
+        humanApprovalNeeded: true,
+      };
+    }
+
+    if (has('industry', 'sector outlook', 'competition', 'commodity')) {
+      return {
+        summary: `Industry Risk: ${industryRisk.map((s) => `${s.sector} ${s.score}/100 (${s.outlook})`).join(', ')}. Retail and Energy carry negative outlooks.`,
+        steps: [
+          { title: 'Measured growth & competition', detail: 'sector dynamics' },
+          { title: 'Assessed regulation & commodity', detail: 'exposure sensitivity' },
+          { title: 'Assigned outlook', detail: 'positive/neutral/negative' },
+        ],
+        tools: [{ name: 'query_database', args: 'industry risk index', status: 'complete' }],
+        agents: [
+          { name: 'Industry Risk Agent', role: 'scored industry risk and outlook', status: 'complete' },
+          { name: 'Portfolio Risk Agent', role: 'linked sector PD to outlook', status: 'complete' },
+        ],
+        confidence: 82,
+        evidence: industryRisk.slice(0, 2).map((s) => `${s.sector} ${s.score}/100`),
+        recommendations: ['Tighten Retail & Energy exposure', 'Re-underwrite commodity-sensitive names'],
+        routedTo: 'Industry Risk Agent',
+        humanApprovalNeeded: false,
+      };
+    }
+
+    if (has('macro', 'gdp', 'inflation', 'unemployment')) {
+      return {
+        summary: `Macroeconomic: base GDP +1.8%, inflation 2.4%, rates 4.50%; downside GDP −1.4%, inflation 3.8%, rates 5.50%. These feed the Stress Testing Agent's scenarios.`,
+        steps: [
+          { title: 'Loaded macro indicators', detail: 'GDP, CPI, rates, FX, unemployment, RE' },
+          { title: 'Formed base/upside/downside', detail: 'three-case framework' },
+        ],
+        tools: [{ name: 'query_database', args: 'macro forecast', status: 'complete' }],
+        agents: [
+          { name: 'Macroeconomic Agent', role: 'projected base/upside/downside', status: 'complete' },
+          { name: 'Stress Testing Agent', role: 'linked to scenarios', status: 'complete' },
+        ],
+        confidence: 80,
+        evidence: ['Base GDP +1.8%', 'Downside GDP −1.4%'],
+        recommendations: ['Stress the book against downside', 'Monitor rate path', 'Refresh monthly'],
+        routedTo: 'Macroeconomic Agent',
+        humanApprovalNeeded: false,
+      };
+    }
+
+    if (has('financial analysis', 'dscr', 'roa', 'roe', 'ebitda', 'interest coverage', 'ratio')) {
+      return {
+        summary: `Financial Analysis: ROA 4.8%, ROE 12.3%, EBITDA margin 22.4%; Debt/EBITDA 2.9×; DSCR 1.62×. Financial strength score 78/100, above sector median.`,
+        steps: [
+          { title: 'Spread statements', detail: 'Automated Spreading' },
+          { title: 'Computed ratios', detail: 'profitability / leverage / liquidity / coverage' },
+          { title: 'Benchmarked', detail: '78/100 strength score' },
+        ],
+        tools: [{ name: 'extract_financials', args: 'statements', status: 'complete' }],
+        agents: [
+          { name: 'Financial Analysis Agent', role: 'spread and ratio analysis', status: 'complete' },
+          { name: 'Credit Underwriting Agent', role: 'consumed ratios for scoring', status: 'complete' },
+        ],
+        confidence: 86,
+        evidence: ['DSCR 1.62×', 'Debt/EBITDA 2.9×', 'ROE 12.3%'],
+        recommendations: ['Attach ratio sheet to credit file', 'Benchmark vs peers'],
+        routedTo: 'Financial Analysis Agent',
+        humanApprovalNeeded: false,
+      };
+    }
 
     if (has('watchlist', 'early', 'warning', 'deteriorate', 'default')) {
       const w = watchlist[0];
@@ -496,13 +925,13 @@
           { name: 'run_credit_model', args: `portfolio: ${w.client}`, status: 'complete' },
         ],
         agents: [
-          { name: 'Risk Assessment Agent', role: 'scored distress probability', status: 'complete' },
-          { name: 'Relationship Manager Copilot', role: 'prepared client review notes', status: 'complete' },
+          { name: 'Early Warning Agent', role: 'scored distress probability', status: 'complete' },
+          { name: 'Chief Risk Officer Agent', role: 'prepared client review notes', status: 'complete' },
         ],
         confidence: 86,
         evidence: [`${w.client} risk score ${w.risk}/100`, `Distress probability ${w.distress}%`, `Drivers: ${w.drivers.slice(0, 2).join('; ')}`],
         recommendations: ['Schedule a 30-day account review', 'Draft restructuring options', 'Notify relationship manager'],
-        routedTo: 'Analyst Partner',
+        routedTo: 'Early Warning Agent',
         humanApprovalNeeded: true,
       };
     }
@@ -523,13 +952,13 @@
           { name: 'query_database', args: 'transactions, 30-day window', status: 'complete' },
         ],
         agents: [
-          { name: 'Compliance (AML) Agent', role: 'typology detection and risk scoring', status: 'complete' },
-          { name: 'Risk Assessment Agent', role: 'validated customer risk', status: 'complete' },
+          { name: 'Compliance & KYC Agent', role: 'typology detection and risk scoring', status: 'complete' },
+          { name: 'Portfolio Risk Agent', role: 'validated customer risk', status: 'complete' },
         ],
         confidence: a.risk === 'High' ? 93 : 78,
         evidence: [`Volume ${a.amount}`, a.note, `Customer ${a.customer}`],
         recommendations: [a.rec, 'Document rationale in audit trail', 'Re-score customer risk quarterly'],
-        routedTo: 'Processor Partner',
+        routedTo: 'Compliance & KYC Agent',
         humanApprovalNeeded: a.risk !== 'Low',
       };
     }
@@ -548,13 +977,13 @@
           { name: 'query_database', args: 'liquidity buffers', status: 'complete' },
         ],
         agents: [
-          { name: 'Treasury & Liquidity Agent', role: 'ran forecast and gap analysis', status: 'complete' },
-          { name: 'CFO Advisor', role: 'validated funding recommendation', status: 'complete' },
+          { name: 'Macroeconomic Agent', role: 'ran forecast and funding-gap analysis', status: 'complete' },
+          { name: 'Chief Risk Officer Agent', role: 'validated funding recommendation', status: 'complete' },
         ],
         confidence: 85,
         evidence: [`Funding gap $${treasury.gap}M by ${treasury.date}`, 'LCR 128% headroom', 'Rate lock opportunity'],
         recommendations: [treasury.recommendation, 'Review short-term maturity ladder', 'Deploy excess cash into HQLA'],
-        routedTo: 'Analyst Partner',
+        routedTo: 'Macroeconomic Agent',
         humanApprovalNeeded: false,
       };
     }
@@ -579,15 +1008,15 @@
           { name: 'run_credit_model', args: 'enterprise portfolio', status: 'complete' },
         ],
         agents: [
-          { name: 'Risk Assessment Agent', role: 'ran scenario and capital projection', status: 'complete' },
-          { name: 'CFO Advisor', role: 'translated to capital-planning action', status: 'complete' },
+          { name: 'Stress Testing Agent', role: 'ran scenario and capital projection', status: 'complete' },
+          { name: 'Chief Risk Officer Agent', role: 'translated to capital-planning action', status: 'complete' },
         ],
         confidence: 82,
         evidence: [`$${s.loss}M expected credit loss`, `CET1 ${(14.2 - s.capitalDelta).toFixed(1)}%`, `${s.shock} shock applied`],
         recommendations: breach
           ? ['Increase loan-loss provisions', 'Raise additional Tier 1 capital', 'Reduce sector concentration']
           : ['Maintain provisions', 'Monitor CRE segment closely', 'Run quarterly re-test'],
-        routedTo: 'Executive Partner',
+        routedTo: 'Stress Testing Agent',
         humanApprovalNeeded: breach,
       };
     }
@@ -609,12 +1038,12 @@
         ],
         agents: [
           { name: 'Credit Underwriting Agent', role: 'Automated Spreading + financial analysis and scoring', status: 'complete' },
-          { name: 'Risk Assessment Agent', role: 'validated exposure', status: 'complete' },
+          { name: 'Financial Analysis Agent', role: 'computed ratios and conditions', status: 'complete' },
         ],
         confidence: a.confidence,
         evidence: a.metrics.slice(0, 3).map((m) => `${m[0]} ${m[1]}`),
         recommendations: [a.recommendation, `Grade ${a.grade} · PD ${a.pd}%`, 'Attach audit trail to credit file'],
-        routedTo: 'Analyst Partner',
+        routedTo: 'Credit Underwriting Agent',
         humanApprovalNeeded: !a.recommendation.startsWith('Approve'),
       };
     }
@@ -636,13 +1065,13 @@
           { name: 'run_credit_model', args: `relationship: ${c.name}`, status: 'complete' },
         ],
         agents: [
-          { name: 'Relationship Manager Copilot', role: 'client 360 and cross-sell engine', status: 'complete' },
-          { name: 'Risk Assessment Agent', role: 'validated risk label', status: 'complete' },
+          { name: 'Chief Risk Officer Agent', role: 'client 360 and cross-sell engine', status: 'complete' },
+          { name: 'Portfolio Risk Agent', role: 'validated risk label', status: 'complete' },
         ],
         confidence: 84,
         evidence: [`Deposits ${money(c.deposits)}`, `Loans ${money(c.loans)}`, `Profitability ${money(c.profitability)}`],
         recommendations: [`Close ${c.suggestions[0].p} (est. $${c.suggestions[0].r}K/yr)`, 'Review risk notifications before meeting', 'Log meeting brief to CRM'],
-        routedTo: 'Service Partner',
+        routedTo: 'Chief Risk Officer Agent',
         humanApprovalNeeded: false,
       };
     }
@@ -673,14 +1102,14 @@
           { name: 'extract_financials', args: 'sample rows · Automated Spreading', status: 'complete' },
         ],
         agents: [
-          { name: 'Analyst Partner', role: 'profiled the dataset schema and risk fields', status: 'complete' },
-          { name: 'Processor Partner', role: 'counted firms and features in the source', status: 'complete' },
-          { name: 'Executive Partner', role: 'framed safe-use guidance', status: 'complete' },
+          { name: 'Credit Underwriting Agent', role: 'profiled the dataset schema and risk fields', status: 'complete' },
+          { name: 'Financial Analysis Agent', role: 'counted firms and features in the source', status: 'complete' },
+          { name: 'Chief Risk Officer Agent', role: 'framed safe-use guidance', status: 'complete' },
         ],
         confidence: 92,
         evidence: [`${firms} synthetic firms (exact row count)`, `${feats} feature columns: ${colList}`, 'Hazard score + event indicator (Status) columns'],
         recommendations: ['Use only for prototyping / demos', 'Treat as synthetic — never use as real customer data', 'Load sample into the credit model sandbox'],
-        routedTo: 'Analyst Partner',
+        routedTo: 'Credit Underwriting Agent',
         humanApprovalNeeded: false,
       };
     }
@@ -701,12 +1130,12 @@
         { name: 'get_stress_test_result', args: s.name.toLowerCase(), status: 'complete' },
       ],
       agents: [
-        { name: 'Risk Assessment Agent', role: 'aggregated portfolio metrics', status: 'complete' },
-        { name: 'CFO Advisor', role: 'framed executive insight', status: 'complete' },
+        { name: 'Portfolio Risk Agent', role: 'aggregated portfolio metrics', status: 'complete' },
+        { name: 'Chief Risk Officer Agent', role: 'framed executive insight', status: 'complete' },
       ],
       confidence: 78,
       evidence: [`CET1 ${s.before}% base`, `PD 2.6% portfolio`, `${s.loss}M loss in ${s.name}`],
-      recommendations: ['Review CPI dashboard', 'Review top watchlist names', 'Pre-read CFO AI recommendations'],
+      recommendations: ['Review portfolio dashboard', 'Review top watchlist names', 'Prepare loan-committee package'],
       routedTo: routePartner(query, state.page),
       humanApprovalNeeded: false,
     };
@@ -741,7 +1170,7 @@
     const dw = data.humanApprovalNeeded;
     return `<div class="agent-run">
       <div class="agent-head"><b>${esc(heading)}</b><span class="conf-label">conf ${data.confidence || 0}%</span></div>
-      <div class="agent-router" data-r="router">Orchestrator → <b>${esc(data.routedTo || 'Service Partner')}</b></div>
+      <div class="agent-router" data-r="router">Chief Risk Officer → <b>${esc(data.routedTo || 'Chief Risk Officer Agent')}</b></div>
       <ol class="agent-steps">${data.steps.map((s) => `<li data-r="step"><span class="dot">◇</span><div><div class="label">${esc(s.title)}</div><div class="detail">${esc(s.detail)}</div></div></li>`).join('')}</ol>
       <div class="agent-tools">${data.tools.map((t) => `<div class="tool-call" data-r="tool"><span><b>${esc(t.name)}</b>(${esc(t.args)})</span><span class="status">queued</span></div>`).join('')}</div>
       ${data.agents.length ? `<div class="agent-handoff">${data.agents.map((a) => `<span class="node" data-r="hand"><span class="dot">✦</span>${esc(a.name)}<small>${esc(a.role)}</small></span>`).join('')}</div>` : ''}
@@ -841,17 +1270,27 @@
 
   /* ---------- per-page AI widget ---------- */
   const AI_WIDGETS = {
-    'RM Copilot': ['What should I focus on with ' + clients[0].name + '?', 'Cross-sell ideas for ' + clients[0].name],
+    Overview: ['What is the top risk right now?', 'Prepare the loan-committee package'],
+    'Credit Committee': ['Top risks today?', 'What should the CRO prioritize?'],
     'Credit Underwriting': ['Summarize the current application?', 'What conditions should I attach?'],
+    'Financial Analysis': ['Compute the full ratio set', 'How strong is the financial profile?'],
+    'Credit Memo': ['Draft the committee memo', 'What conditions to attach?'],
     'Early Warning': ['Which client is deteriorating fastest?', 'How to downgrade a watchlist name?'],
-    Treasury: ['When is the funding gap worst?', 'Should we issue a bond?'],
+    'Covenant Monitoring': ['Which covenants are breached?', 'Escalate a covenant breach?'],
     'Portfolio Risk': ['Most damaging scenario?', 'Which sector to de-risk?'],
+    'Concentration Risk': ['Top single-name exposures?', 'De-risk Retail concentration?'],
+    'Industry Risk': ['Which sector outlook is worst?', 'Re-underwrite Retail?'],
+    Macroeconomic: ['What is the downside case?', 'How do rates hit the book?'],
     'Stress Testing': ['Will we breach the CET1 floor?', 'What capital action first?'],
+    'Capital Allocation': ['Most capital-efficient line?', 'Reduce CRE RWA?'],
+    'IFRS 9 / CECL': ['What is the allowance?', 'How do stages map to ECL?'],
+    Pricing: ['Minimum spread for Delta Foods?', 'Is RAROC above hurdle?'],
+    AML: ['What is the top KYC/AML alert?', 'Should we file a SAR?'],
+    Treasury: ['When is the funding gap worst?', 'Should we issue a bond?'],
+    'RM Copilot': ['What should I focus on with ' + clients[0].name + '?', 'Cross-sell ideas for ' + clients[0].name],
     'CFO AI': ['What should the CFO act on today?', 'Trade-offs of raising AT1?'],
-    AML: ['What is the top alert?', 'Should we file a SAR?'],
-    'Digital Partners': ['How do the five partners divide work?', 'Which partner handles document collection?'],
+    'Digital Partners': ['How do the 15 agents divide work?', 'Which agent handles covenants?'],
     Dataset: ['Summarize the dataset', 'Is sector risk evenly spread?', 'What drives the hazard score?'],
-    Overview: ['What is the top risk right now?', 'Summarize the platform'],
   };
 
   function addAgentWidget() {
@@ -881,7 +1320,7 @@
   }
 
   /* ---------- chat ---------- */
-  const chat = { messages: [{ role: 'system', content: 'You are the BankRisk agent team. Answer concisely with banking expertise and always state supporting evidence and confidence.' }], busy: false };
+  const chat = { messages: [{ role: 'system', content: 'You are the Corporate Banking Decision Intelligence agent team — a Chief Risk Officer orchestrating 14 specialist agents. Answer concisely with banking expertise, state supporting evidence and confidence, and never approve a loan automatically.' }], busy: false };
   const chatBody = () => document.getElementById('chatBody');
   const chatInput = () => document.getElementById('chatInput');
   const chatSend = () => document.getElementById('chatSend');
@@ -912,7 +1351,7 @@
     const data = await agentAnalyze(text, ctx);
     const stepsHtml = data.steps.length ? `<div class="trace">${data.steps.map((s) => `<span class="t">${esc(s.title)}</span>`).join('')}</div>` : '';
     const agentsHtml = data.agents.length ? `<div class="trace">${data.agents.map((a) => `<span class="t" style="background:var(--green2);color:var(--green)">✧ ${esc(a.name)}</span>`).join('')}</div>` : '';
-    const routerHtml = `<div class="trace"><span class="t" style="background:var(--navy);color:#fff">Orchestrator → ${esc(data.routedTo || 'Service Partner')}</span></div>`;
+    const routerHtml = `<div class="trace"><span class="t" style="background:var(--navy);color:#fff">Chief Risk Officer → ${esc(data.routedTo || 'Chief Risk Officer Agent')}</span></div>`;
     const dwHtml = data.humanApprovalNeeded ? `<div class="dw-inline">⚠ <b>Human review required</b> — this case is escalated to a banker for approval.</div>` : '';
     typing.outerHTML = `<div class="msg agent">${esc(data.summary)}
       <div class="msg-foot"><span class="conf-pill" style="color:${data.confidence >= 80 ? 'var(--green)' : data.confidence >= 60 ? 'var(--amber)' : 'var(--red)'}">◆ ${data.confidence || 0}% confidence</span><span>${data.evidence.length} evidence · ${data.tools.length} tools · ${data.agents.length} agents</span></div>

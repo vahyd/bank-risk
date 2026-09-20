@@ -1,0 +1,1249 @@
+{
+  "trainedAt": "2026-09-12T10:25:08.788Z",
+  "dataset": {
+    "recordId": "18115815",
+    "file": "firms_features_clean.csv",
+    "firms": 19544,
+    "features": 13,
+    "defaultRate": 0.82
+  },
+  "model": {
+    "type": "ridge-regression (SGD, L2) on dataset hazard",
+    "features": [
+      "log(Size)",
+      "Leverage",
+      "Profit_Margin",
+      "RD_Intensity",
+      "Org_Complexity",
+      "Sector dummies",
+      "Region dummies"
+    ],
+    "r2": 0.7556,
+    "corr": 0.886,
+    "trainedOn": 15635,
+    "evaluatedOn": 3909,
+    "grades": [
+      "A < 2.0%",
+      "A- < 4.0%",
+      "B+ < 6.0%",
+      "B < 10.0%",
+      "B- < 16.0%",
+      "CCC < 25.0%",
+      "D < 101.0%"
+    ]
+  },
+  "sections": {
+    "underwriting": {
+      "model": "ridge regression on hazard (SRD, L2)",
+      "applications": [
+        {
+          "id": "APP-2010",
+          "name": "Services Group 336",
+          "industry": "Services",
+          "region": "Europe",
+          "requested": 0.2,
+          "score": 96,
+          "pd": 0.2,
+          "grade": "A",
+          "recTone": "green",
+          "confidence": 88,
+          "inputs": [
+            "Synthetic financial statements",
+            "2 years tax returns"
+          ],
+          "metrics": [
+            [
+              "Leverage (Debt/Assets)",
+              "0.0%"
+            ],
+            [
+              "Profit margin",
+              "68.6%"
+            ],
+            [
+              "R&D intensity",
+              "0.96"
+            ],
+            [
+              "Org complexity",
+              "4"
+            ],
+            [
+              "Model PD",
+              "0.2%"
+            ]
+          ],
+          "memo": "Services firm, Europe, model PD 0.2%. Leverage within sector norm. Margins are positive. Recommendation: Approve.",
+          "recommendation": "Approve"
+        },
+        {
+          "id": "APP-2011",
+          "name": "Technology Group 050",
+          "industry": "Technology",
+          "region": "USA",
+          "requested": 0.1,
+          "score": 84,
+          "pd": 3.2,
+          "grade": "A-",
+          "recTone": "green",
+          "confidence": 87,
+          "inputs": [
+            "Synthetic financial statements",
+            "2 years tax returns"
+          ],
+          "metrics": [
+            [
+              "Leverage (Debt/Assets)",
+              "38.5%"
+            ],
+            [
+              "Profit margin",
+              "10.6%"
+            ],
+            [
+              "R&D intensity",
+              "1.04"
+            ],
+            [
+              "Org complexity",
+              "4"
+            ],
+            [
+              "Model PD",
+              "3.2%"
+            ]
+          ],
+          "memo": "Technology firm, USA, model PD 3.2%. Leverage within sector norm. Margins are positive. Recommendation: Approve.",
+          "recommendation": "Approve"
+        },
+        {
+          "id": "APP-2012",
+          "name": "Energy Group 439",
+          "industry": "Energy",
+          "region": "Europe",
+          "requested": 0.1,
+          "score": 71,
+          "pd": 6.3,
+          "grade": "B",
+          "recTone": "amber",
+          "confidence": 85,
+          "inputs": [
+            "Synthetic financial statements",
+            "2 years tax returns"
+          ],
+          "metrics": [
+            [
+              "Leverage (Debt/Assets)",
+              "84.8%"
+            ],
+            [
+              "Profit margin",
+              "0.6%"
+            ],
+            [
+              "R&D intensity",
+              "0.39"
+            ],
+            [
+              "Org complexity",
+              "4"
+            ],
+            [
+              "Model PD",
+              "6.3%"
+            ]
+          ],
+          "memo": "Energy firm, Europe, model PD 6.3%. High leverage relative to sector. Margins are positive. Recommendation: Approve with conditions.",
+          "recommendation": "Approve with conditions"
+        },
+        {
+          "id": "APP-2013",
+          "name": "Services Group 228",
+          "industry": "Services",
+          "region": "Europe",
+          "requested": 0.1,
+          "score": 59,
+          "pd": 9,
+          "grade": "B",
+          "recTone": "amber",
+          "confidence": 84,
+          "inputs": [
+            "Synthetic financial statements",
+            "2 years tax returns"
+          ],
+          "metrics": [
+            [
+              "Leverage (Debt/Assets)",
+              "51.7%"
+            ],
+            [
+              "Profit margin",
+              "48.0%"
+            ],
+            [
+              "R&D intensity",
+              "0.02"
+            ],
+            [
+              "Org complexity",
+              "2"
+            ],
+            [
+              "Model PD",
+              "9.0%"
+            ]
+          ],
+          "memo": "Services firm, Europe, model PD 9.0%. Leverage within sector norm. Margins are positive. Recommendation: Approve with conditions.",
+          "recommendation": "Approve with conditions"
+        },
+        {
+          "id": "APP-2014",
+          "name": "Energy Group 323",
+          "industry": "Energy",
+          "region": "Europe",
+          "requested": 0.1,
+          "score": 48,
+          "pd": 11.6,
+          "grade": "B-",
+          "recTone": "amber",
+          "confidence": 83,
+          "inputs": [
+            "Synthetic financial statements",
+            "2 years tax returns"
+          ],
+          "metrics": [
+            [
+              "Leverage (Debt/Assets)",
+              "100.0%"
+            ],
+            [
+              "Profit margin",
+              "20.1%"
+            ],
+            [
+              "R&D intensity",
+              "0.48"
+            ],
+            [
+              "Org complexity",
+              "1"
+            ],
+            [
+              "Model PD",
+              "11.6%"
+            ]
+          ],
+          "memo": "Energy firm, Europe, model PD 11.6%. High leverage relative to sector. Margins are positive. Recommendation: Decline.",
+          "recommendation": "Decline"
+        },
+        {
+          "id": "APP-2015",
+          "name": "Services Group 225",
+          "industry": "Services",
+          "region": "USA",
+          "requested": 0,
+          "score": 33,
+          "pd": 15.4,
+          "grade": "B-",
+          "recTone": "amber",
+          "confidence": 82,
+          "inputs": [
+            "Synthetic financial statements",
+            "2 years tax returns"
+          ],
+          "metrics": [
+            [
+              "Leverage (Debt/Assets)",
+              "90.5%"
+            ],
+            [
+              "Profit margin",
+              "-33.2%"
+            ],
+            [
+              "R&D intensity",
+              "0.47"
+            ],
+            [
+              "Org complexity",
+              "2"
+            ],
+            [
+              "Model PD",
+              "15.4%"
+            ]
+          ],
+          "memo": "Services firm, USA, model PD 15.4%. High leverage relative to sector. Margins are negative. Recommendation: Decline.",
+          "recommendation": "Decline"
+        }
+      ],
+      "gradeRules": [
+        "A < 2.0%",
+        "A- < 4.0%",
+        "B+ < 6.0%",
+        "B < 10.0%",
+        "B- < 16.0%",
+        "CCC < 25.0%",
+        "D < 101.0%"
+      ],
+      "ecl": 75.45504512902058,
+      "lgd": 0.45
+    },
+    "earlyWarning": {
+      "model": "predicted hazard + covariate ranking",
+      "watchlist": [
+        {
+          "firm": "Firm 11040",
+          "sector": "Manufacturing",
+          "region": "Europe",
+          "pd": 28.8,
+          "riskScore": 75,
+          "distress": 55,
+          "severity": "High",
+          "drivers": [
+            "Leverage 100%",
+            "Negative margin -170.4%",
+            "Model PD 28.8%"
+          ]
+        },
+        {
+          "firm": "Firm 8162",
+          "sector": "Services",
+          "region": "USA",
+          "pd": 28.2,
+          "riskScore": 73,
+          "distress": 54,
+          "severity": "High",
+          "drivers": [
+            "Leverage 100%",
+            "Negative margin -153.5%",
+            "Model PD 28.2%"
+          ]
+        },
+        {
+          "firm": "Firm 1493",
+          "sector": "Services",
+          "region": "Europe",
+          "pd": 27.9,
+          "riskScore": 73,
+          "distress": 53,
+          "severity": "High",
+          "drivers": [
+            "Leverage 100%",
+            "Negative margin -112.5%",
+            "Model PD 27.9%"
+          ]
+        },
+        {
+          "firm": "Firm 17039",
+          "sector": "Services",
+          "region": "Europe",
+          "pd": 27,
+          "riskScore": 70,
+          "distress": 51,
+          "severity": "High",
+          "drivers": [
+            "Leverage 100%",
+            "Negative margin -98.1%",
+            "Model PD 27.0%"
+          ]
+        },
+        {
+          "firm": "Firm 7093",
+          "sector": "Services",
+          "region": "Europe",
+          "pd": 26.9,
+          "riskScore": 70,
+          "distress": 51,
+          "severity": "High",
+          "drivers": [
+            "Leverage 100%",
+            "Negative margin -134.3%",
+            "Model PD 26.9%"
+          ]
+        },
+        {
+          "firm": "Firm 11712",
+          "sector": "Services",
+          "region": "LatAm",
+          "pd": 26.4,
+          "riskScore": 69,
+          "distress": 50,
+          "severity": "High",
+          "drivers": [
+            "Leverage 83%",
+            "Negative margin -104.5%",
+            "Model PD 26.4%"
+          ]
+        },
+        {
+          "firm": "Firm 9632",
+          "sector": "Services",
+          "region": "USA",
+          "pd": 26.2,
+          "riskScore": 68,
+          "distress": 50,
+          "severity": "High",
+          "drivers": [
+            "Leverage 100%",
+            "Negative margin -136.3%",
+            "Model PD 26.2%"
+          ]
+        },
+        {
+          "firm": "Firm 12564",
+          "sector": "Services",
+          "region": "Europe",
+          "pd": 26.2,
+          "riskScore": 68,
+          "distress": 50,
+          "severity": "High",
+          "drivers": [
+            "Leverage 100%",
+            "Negative margin -79.4%",
+            "Model PD 26.2%"
+          ]
+        },
+        {
+          "firm": "Firm 4106",
+          "sector": "Finance",
+          "region": "Europe",
+          "pd": 25.9,
+          "riskScore": 67,
+          "distress": 49,
+          "severity": "High",
+          "drivers": [
+            "Leverage 100%",
+            "Negative margin -92.9%",
+            "Model PD 25.9%"
+          ]
+        },
+        {
+          "firm": "Firm 12793",
+          "sector": "Manufacturing",
+          "region": "Europe",
+          "pd": 25.7,
+          "riskScore": 67,
+          "distress": 49,
+          "severity": "High",
+          "drivers": [
+            "Leverage 100%",
+            "Negative margin -155.2%",
+            "Model PD 25.7%"
+          ]
+        },
+        {
+          "firm": "Firm 1693",
+          "sector": "Services",
+          "region": "Europe",
+          "pd": 25.7,
+          "riskScore": 67,
+          "distress": 49,
+          "severity": "High",
+          "drivers": [
+            "Leverage 100%",
+            "Negative margin -101.2%",
+            "Model PD 25.7%"
+          ]
+        },
+        {
+          "firm": "Firm 6185",
+          "sector": "Services",
+          "region": "LatAm",
+          "pd": 25.4,
+          "riskScore": 66,
+          "distress": 48,
+          "severity": "High",
+          "drivers": [
+            "Leverage 94%",
+            "Negative margin -120.7%",
+            "Model PD 25.4%"
+          ]
+        },
+        {
+          "firm": "Firm 8540",
+          "sector": "Services",
+          "region": "Europe",
+          "pd": 25.3,
+          "riskScore": 66,
+          "distress": 48,
+          "severity": "High",
+          "drivers": [
+            "Leverage 100%",
+            "Negative margin -120.3%",
+            "Model PD 25.3%"
+          ]
+        },
+        {
+          "firm": "Firm 11680",
+          "sector": "Finance",
+          "region": "Europe",
+          "pd": 25.1,
+          "riskScore": 65,
+          "distress": 48,
+          "severity": "High",
+          "drivers": [
+            "Leverage 100%",
+            "Negative margin -121.8%",
+            "Model PD 25.1%"
+          ]
+        },
+        {
+          "firm": "Firm 10112",
+          "sector": "Finance",
+          "region": "LatAm",
+          "pd": 25.1,
+          "riskScore": 65,
+          "distress": 48,
+          "severity": "High",
+          "drivers": [
+            "Leverage 85%",
+            "Negative margin -97.4%",
+            "Model PD 25.1%"
+          ]
+        },
+        {
+          "firm": "Firm 3046",
+          "sector": "Services",
+          "region": "Europe",
+          "pd": 25,
+          "riskScore": 65,
+          "distress": 48,
+          "severity": "High",
+          "drivers": [
+            "Leverage 100%",
+            "Negative margin -121.9%",
+            "Model PD 25.0%"
+          ]
+        },
+        {
+          "firm": "Firm 9034",
+          "sector": "Services",
+          "region": "Europe",
+          "pd": 25,
+          "riskScore": 65,
+          "distress": 47,
+          "severity": "High",
+          "drivers": [
+            "Leverage 100%",
+            "Negative margin -97.9%",
+            "Model PD 25.0%"
+          ]
+        },
+        {
+          "firm": "Firm 4647",
+          "sector": "Services",
+          "region": "Europe",
+          "pd": 24.9,
+          "riskScore": 65,
+          "distress": 47,
+          "severity": "High",
+          "drivers": [
+            "Leverage 100%",
+            "Negative margin -98.7%",
+            "Model PD 24.9%"
+          ]
+        },
+        {
+          "firm": "Firm 6646",
+          "sector": "Finance",
+          "region": "USA",
+          "pd": 24.7,
+          "riskScore": 64,
+          "distress": 47,
+          "severity": "High",
+          "drivers": [
+            "Leverage 100%",
+            "Negative margin -125.8%",
+            "Model PD 24.7%"
+          ]
+        },
+        {
+          "firm": "Firm 16097",
+          "sector": "Services",
+          "region": "LatAm",
+          "pd": 24.7,
+          "riskScore": 64,
+          "distress": 47,
+          "severity": "High",
+          "drivers": [
+            "Leverage 83%",
+            "Negative margin -128.7%",
+            "Model PD 24.7%"
+          ]
+        },
+        {
+          "firm": "Firm 11851",
+          "sector": "Services",
+          "region": "USA",
+          "pd": 24.6,
+          "riskScore": 64,
+          "distress": 47,
+          "severity": "High",
+          "drivers": [
+            "Leverage 100%",
+            "Negative margin -146.2%",
+            "Model PD 24.6%"
+          ]
+        },
+        {
+          "firm": "Firm 18348",
+          "sector": "Services",
+          "region": "USA",
+          "pd": 24.4,
+          "riskScore": 63,
+          "distress": 46,
+          "severity": "High",
+          "drivers": [
+            "Leverage 100%",
+            "Negative margin -104.4%",
+            "Model PD 24.4%"
+          ]
+        },
+        {
+          "firm": "Firm 10380",
+          "sector": "Finance",
+          "region": "Europe",
+          "pd": 24.3,
+          "riskScore": 63,
+          "distress": 46,
+          "severity": "High",
+          "drivers": [
+            "Leverage 100%",
+            "Negative margin -124.1%",
+            "Model PD 24.3%"
+          ]
+        },
+        {
+          "firm": "Firm 6484",
+          "sector": "Services",
+          "region": "USA",
+          "pd": 24.2,
+          "riskScore": 63,
+          "distress": 46,
+          "severity": "High",
+          "drivers": [
+            "Leverage 100%",
+            "Negative margin -202.7%",
+            "Model PD 24.2%"
+          ]
+        },
+        {
+          "firm": "Firm 6781",
+          "sector": "Finance",
+          "region": "USA",
+          "pd": 24.1,
+          "riskScore": 63,
+          "distress": 46,
+          "severity": "High",
+          "drivers": [
+            "Leverage 100%",
+            "Negative margin -96.3%",
+            "Model PD 24.1%"
+          ]
+        }
+      ],
+      "thresholds": {
+        "High": "PD > 12%",
+        "Medium": "PD 6–12%",
+        "Low": "PD < 6%"
+      }
+    },
+    "rmCopilot": {
+      "model": "client-book derivation (size × risk → relationship health)",
+      "clients": [
+        {
+          "name": "Services Group A",
+          "industry": "Services",
+          "region": "LatAm",
+          "deposits": 6.8,
+          "loans": 15.4,
+          "profitability": 1.28,
+          "riskLabel": "Low",
+          "products": [
+            "Loan",
+            "Deposit Account"
+          ],
+          "suggestions": [
+            {
+              "p": "Cash Management",
+              "r": 17
+            },
+            {
+              "p": "FX Hedging",
+              "r": 19
+            },
+            {
+              "p": "Revolving Credit",
+              "r": 7
+            }
+          ],
+          "brief": "Services firm, LatAm. Model PD 0.2%. Healthy margins; good cross-sell candidates.",
+          "alerts": [
+            "No issues"
+          ],
+          "pd": 0.2
+        },
+        {
+          "name": "Retail Group B",
+          "industry": "Retail",
+          "region": "LatAm",
+          "deposits": 5.4,
+          "loans": 12.2,
+          "profitability": 0.17,
+          "riskLabel": "High",
+          "products": [
+            "Loan",
+            "Deposit Account"
+          ],
+          "suggestions": [
+            {
+              "p": "Inventory Financing",
+              "r": 14
+            },
+            {
+              "p": "Merchant Services",
+              "r": 16
+            },
+            {
+              "p": "Receivables Financing",
+              "r": 18
+            }
+          ],
+          "brief": "Retail firm, LatAm. Model PD 16.0%. Margin pressure — review facility pricing.",
+          "alerts": [
+            "Model PD above 10%",
+            "Review credit facility pricing"
+          ],
+          "pd": 16
+        },
+        {
+          "name": "Manufacturing Group C",
+          "industry": "Manufacturing",
+          "region": "LatAm",
+          "deposits": 4.3,
+          "loans": 9.7,
+          "profitability": 1.51,
+          "riskLabel": "Low",
+          "products": [
+            "Loan",
+            "Deposit Account"
+          ],
+          "suggestions": [
+            {
+              "p": "Working Capital Facility",
+              "r": 19
+            },
+            {
+              "p": "Equipment Financing",
+              "r": 7
+            },
+            {
+              "p": "Trade Finance",
+              "r": 9
+            }
+          ],
+          "brief": "Manufacturing firm, LatAm. Model PD 1.1%. Healthy margins; good cross-sell candidates.",
+          "alerts": [
+            "No issues"
+          ],
+          "pd": 1.1
+        },
+        {
+          "name": "Services Group D",
+          "industry": "Services",
+          "region": "LatAm",
+          "deposits": 4.2,
+          "loans": 9.6,
+          "profitability": 1.04,
+          "riskLabel": "Medium",
+          "products": [
+            "Loan",
+            "Deposit Account"
+          ],
+          "suggestions": [
+            {
+              "p": "Cash Management",
+              "r": 18
+            },
+            {
+              "p": "FX Hedging",
+              "r": 20
+            },
+            {
+              "p": "Revolving Credit",
+              "r": 8
+            }
+          ],
+          "brief": "Services firm, LatAm. Model PD 9.9%. Healthy margins; good cross-sell candidates.",
+          "alerts": [
+            "Elevated model risk"
+          ],
+          "pd": 9.9
+        },
+        {
+          "name": "Manufacturing Group E",
+          "industry": "Manufacturing",
+          "region": "LatAm",
+          "deposits": 3.9,
+          "loans": 8.9,
+          "profitability": 1.05,
+          "riskLabel": "Medium",
+          "products": [
+            "Loan",
+            "Deposit Account"
+          ],
+          "suggestions": [
+            {
+              "p": "Working Capital Facility",
+              "r": 19
+            },
+            {
+              "p": "Equipment Financing",
+              "r": 7
+            },
+            {
+              "p": "Trade Finance",
+              "r": 9
+            }
+          ],
+          "brief": "Manufacturing firm, LatAm. Model PD 9.6%. Healthy margins; good cross-sell candidates.",
+          "alerts": [
+            "Elevated model risk"
+          ],
+          "pd": 9.6
+        },
+        {
+          "name": "Technology Group F",
+          "industry": "Technology",
+          "region": "Europe",
+          "deposits": 2.7,
+          "loans": 6.2,
+          "profitability": 0.67,
+          "riskLabel": "High",
+          "products": [
+            "Loan",
+            "Deposit Account"
+          ],
+          "suggestions": [
+            {
+              "p": "Venture Debt",
+              "r": 19
+            },
+            {
+              "p": "FX Hedging",
+              "r": 7
+            },
+            {
+              "p": "Liquidity Sweep",
+              "r": 9
+            }
+          ],
+          "brief": "Technology firm, Europe. Model PD 15.8%. Healthy margins; good cross-sell candidates.",
+          "alerts": [
+            "Model PD above 10%",
+            "Review credit facility pricing"
+          ],
+          "pd": 15.8
+        }
+      ],
+      "crossSellRules": {
+        "Manufacturing": [
+          "Working Capital Facility",
+          "Equipment Financing",
+          "Trade Finance"
+        ],
+        "Services": [
+          "Cash Management",
+          "FX Hedging",
+          "Revolving Credit"
+        ],
+        "Technology": [
+          "Venture Debt",
+          "FX Hedging",
+          "Liquidity Sweep"
+        ],
+        "Retail": [
+          "Inventory Financing",
+          "Merchant Services",
+          "Receivables Financing"
+        ],
+        "Finance": [
+          "Repo / Collateral Lines",
+          "Liquidity Sweep",
+          "Counterparty Lines"
+        ],
+        "Energy": [
+          "Commodity Hedging",
+          "Project Finance",
+          "FX Hedging"
+        ]
+      }
+    },
+    "portfolioRisk": {
+      "model": "segment exposure × trained PD",
+      "sectorStats": [
+        {
+          "sector": "Services",
+          "firms": 3295,
+          "ead": 407.9422168233487,
+          "defaultRate": 0.8133535660091047,
+          "meanPD": 0.09155955624443755,
+          "meanMargin": 0.05291005982033365,
+          "meanLeverage": 0.5524624174895287
+        },
+        {
+          "sector": "Technology",
+          "firms": 3231,
+          "ead": 397.30078181450193,
+          "defaultRate": 0.8279170535437945,
+          "meanPD": 0.08367938494660514,
+          "meanMargin": 0.1407274801792014,
+          "meanLeverage": 0.5313073385249153
+        },
+        {
+          "sector": "Retail",
+          "firms": 3245,
+          "ead": 384.49390409776265,
+          "defaultRate": 0.8086286594761171,
+          "meanPD": 0.0833992896432604,
+          "meanMargin": 0.04430988229707229,
+          "meanLeverage": 0.5499197979497674
+        },
+        {
+          "sector": "Finance",
+          "firms": 3196,
+          "ead": 390.07841178301396,
+          "defaultRate": 0.8225907384230288,
+          "meanPD": 0.08104675613800644,
+          "meanMargin": 0.07788695966082614,
+          "meanLeverage": 0.5423017124076985
+        },
+        {
+          "sector": "Manufacturing",
+          "firms": 3296,
+          "ead": 428.691560996224,
+          "defaultRate": 0.8252427184466019,
+          "meanPD": 0.07302946497237656,
+          "meanMargin": 0.046328715632281595,
+          "meanLeverage": 0.5401448708146246
+        },
+        {
+          "sector": "Energy",
+          "firms": 3281,
+          "ead": 391.493124485139,
+          "defaultRate": 0.8226150563852483,
+          "meanPD": 0.04863064418334796,
+          "meanMargin": 0.11278830858610173,
+          "meanLeverage": 0.5324728782810116
+        }
+      ],
+      "regionStats": [
+        {
+          "region": "USA",
+          "firms": 6434,
+          "ead": 786.6077488976007,
+          "defaultRate": 0.8374261734535281,
+          "meanPD": 0.06590614336297843,
+          "meanMargin": 0.07943674033431786,
+          "meanLeverage": 0.5133614234460686
+        },
+        {
+          "region": "LatAm",
+          "firms": 6650,
+          "ead": 854.4897440951787,
+          "defaultRate": 0.7971428571428572,
+          "meanPD": 0.08635279332297001,
+          "meanMargin": 0.08085061674150366,
+          "meanLeverage": 0.5934435757106772
+        },
+        {
+          "region": "Europe",
+          "firms": 6460,
+          "ead": 758.9025070072103,
+          "defaultRate": 0.8263157894736842,
+          "meanPD": 0.07797043594686108,
+          "meanMargin": 0.07674097914086683,
+          "meanLeverage": 0.5158974496162553
+        }
+      ],
+      "ecl": 75.45504512902058,
+      "concentration": [
+        {
+          "sector": "Services",
+          "share": 17
+        },
+        {
+          "sector": "Technology",
+          "share": 17
+        },
+        {
+          "sector": "Retail",
+          "share": 16
+        },
+        {
+          "sector": "Finance",
+          "share": 16
+        },
+        {
+          "sector": "Manufacturing",
+          "share": 18
+        },
+        {
+          "sector": "Energy",
+          "share": 16
+        }
+      ]
+    },
+    "stressTesting": {
+      "model": "sector-scaled PD uplifts → ECL → CET1",
+      "scenarios": [
+        {
+          "id": "recession",
+          "name": "Recession",
+          "shock": "GDP −3%",
+          "loss": 151,
+          "uplift": 75,
+          "after": 11.7,
+          "breach": false
+        },
+        {
+          "id": "housing",
+          "name": "Housing Crash",
+          "shock": "House prices −25%",
+          "loss": 155,
+          "uplift": 79,
+          "after": 11.6,
+          "breach": false
+        },
+        {
+          "id": "rate",
+          "name": "Rate Hike",
+          "shock": "Rates +300bp",
+          "loss": 222,
+          "uplift": 146,
+          "after": 9.3,
+          "breach": true
+        },
+        {
+          "id": "currency",
+          "name": "Currency Crisis",
+          "shock": "FX −30%",
+          "loss": 142,
+          "uplift": 66,
+          "after": 12,
+          "breach": false
+        },
+        {
+          "id": "cre",
+          "name": "CRE Downturn",
+          "shock": "Commercial RE −20%",
+          "loss": 293,
+          "uplift": 218,
+          "after": 6.9,
+          "breach": true
+        }
+      ],
+      "lgd": 0.45
+    },
+    "cfoAI": {
+      "model": "ECL / capital planning on trained portfolio",
+      "ecl": 75.45504512902058,
+      "eadM": 2400,
+      "cet1": 14.2,
+      "lgd": 0.45,
+      "recommendations": [
+        {
+          "scenario": "Rate Hike",
+          "action": "Raise Tier 1 + increase provisions",
+          "reason": "Rate Hike drops CET1 to 9.3% (floor 10.5%)"
+        },
+        {
+          "scenario": "CRE Downturn",
+          "action": "Raise Tier 1 + increase provisions",
+          "reason": "CRE Downturn drops CET1 to 6.9% (floor 10.5%)"
+        },
+        {
+          "scenario": "baseline",
+          "action": "Maintain provisioning",
+          "reason": "Baseline ECL $75M on $2400M EAD"
+        }
+      ]
+    },
+    "aml": {
+      "model": "hazard/covariate outlier scoring",
+      "rules": [
+        "cov_effect > 3 flagged",
+        "org complexity in top decile",
+        "hazard in top decile"
+      ],
+      "alerts": [
+        {
+          "alert": "Rapid turnover in cash",
+          "customer": "Manufacturing Trucks A",
+          "risk": "High",
+          "amount": "—",
+          "rec": "Escalate to compliance review",
+          "note": "Manufacturing firm, Europe. Covariate effect 17.59 and model PD 28.8% sit in the riskiest decile of the trained portfolio."
+        },
+        {
+          "alert": "Unusual transfer pattern",
+          "customer": "Services Trucks B",
+          "risk": "High",
+          "amount": "$0K",
+          "rec": "Escalate to compliance review",
+          "note": "Services firm, Europe. Covariate effect 11.88 and model PD 27.9% sit in the riskiest decile of the trained portfolio."
+        },
+        {
+          "alert": "Rapid turnover in cash",
+          "customer": "Services Trucks C",
+          "risk": "High",
+          "amount": "$0K",
+          "rec": "Escalate to compliance review",
+          "note": "Services firm, USA. Covariate effect 14.33 and model PD 28.2% sit in the riskiest decile of the trained portfolio."
+        },
+        {
+          "alert": "Unusual transfer pattern",
+          "customer": "Services Trucks D",
+          "risk": "High",
+          "amount": "—",
+          "rec": "Escalate to compliance review",
+          "note": "Services firm, LatAm. Covariate effect 8.95 and model PD 26.4% sit in the riskiest decile of the trained portfolio."
+        },
+        {
+          "alert": "Rapid turnover in cash",
+          "customer": "Services Trucks E",
+          "risk": "High",
+          "amount": "$0K",
+          "rec": "Escalate to compliance review",
+          "note": "Services firm, Europe. Covariate effect 10.45 and model PD 27.0% sit in the riskiest decile of the trained portfolio."
+        },
+        {
+          "alert": "Unusual transfer pattern",
+          "customer": "Services Trucks F",
+          "risk": "High",
+          "amount": "$0K",
+          "rec": "Escalate to compliance review",
+          "note": "Services firm, Europe. Covariate effect 9.85 and model PD 26.9% sit in the riskiest decile of the trained portfolio."
+        },
+        {
+          "alert": "Rapid turnover in cash",
+          "customer": "Services Trucks G",
+          "risk": "High",
+          "amount": "—",
+          "rec": "Escalate to compliance review",
+          "note": "Services firm, Europe. Covariate effect 9.50 and model PD 26.2% sit in the riskiest decile of the trained portfolio."
+        },
+        {
+          "alert": "Unusual transfer pattern",
+          "customer": "Finance Trucks H",
+          "risk": "High",
+          "amount": "$0K",
+          "rec": "Escalate to compliance review",
+          "note": "Finance firm, Europe. Covariate effect 10.30 and model PD 25.9% sit in the riskiest decile of the trained portfolio."
+        }
+      ]
+    },
+    "treasury": {
+      "model": "portfolio ECL → liquidity gap",
+      "gap": 121,
+      "date": "Q2 2028",
+      "recommendation": "Issue 5-year bond",
+      "lcr": 120,
+      "nsfr": 106,
+      "forecast": [
+        52,
+        42,
+        29,
+        10,
+        -18,
+        -55,
+        -101,
+        -156
+      ]
+    },
+    "datasetAgent": {
+      "model": "exact-count schema profiler",
+      "stats": {
+        "firms": 19544,
+        "features": 13
+      },
+      "defaultRate": 0.820047073270569
+    },
+    "overview": {
+      "model": "portfolio aggregation",
+      "firms": 19544,
+      "defaultRate": 0.820047073270569,
+      "eadM": 2400,
+      "ecl": 75.45504512902058,
+      "bySectorSummary": [
+        {
+          "sector": "Services",
+          "firms": 3295,
+          "ead": 407.9422168233487,
+          "defaultRate": 0.8133535660091047,
+          "meanPD": 0.09155955624443755,
+          "meanMargin": 0.05291005982033365,
+          "meanLeverage": 0.5524624174895287
+        },
+        {
+          "sector": "Technology",
+          "firms": 3231,
+          "ead": 397.30078181450193,
+          "defaultRate": 0.8279170535437945,
+          "meanPD": 0.08367938494660514,
+          "meanMargin": 0.1407274801792014,
+          "meanLeverage": 0.5313073385249153
+        },
+        {
+          "sector": "Retail",
+          "firms": 3245,
+          "ead": 384.49390409776265,
+          "defaultRate": 0.8086286594761171,
+          "meanPD": 0.0833992896432604,
+          "meanMargin": 0.04430988229707229,
+          "meanLeverage": 0.5499197979497674
+        }
+      ],
+      "byRegionSummary": [
+        {
+          "region": "USA",
+          "firms": 6434,
+          "ead": 786.6077488976007,
+          "defaultRate": 0.8374261734535281,
+          "meanPD": 0.06590614336297843,
+          "meanMargin": 0.07943674033431786,
+          "meanLeverage": 0.5133614234460686
+        },
+        {
+          "region": "LatAm",
+          "firms": 6650,
+          "ead": 854.4897440951787,
+          "defaultRate": 0.7971428571428572,
+          "meanPD": 0.08635279332297001,
+          "meanMargin": 0.08085061674150366,
+          "meanLeverage": 0.5934435757106772
+        },
+        {
+          "region": "Europe",
+          "firms": 6460,
+          "ead": 758.9025070072103,
+          "defaultRate": 0.8263157894736842,
+          "meanPD": 0.07797043594686108,
+          "meanMargin": 0.07674097914086683,
+          "meanLeverage": 0.5158974496162553
+        }
+      ]
+    },
+    "digitalPartners": {
+      "model": "intent-router (unchanged), grounded on trained artifacts",
+      "roster": [
+        "Executive Partner",
+        "Analyst Partner",
+        "Service Partner",
+        "Processor Partner",
+        "Client Partner"
+      ]
+    }
+  }
+}
