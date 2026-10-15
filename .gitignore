@@ -1,3 +1,13 @@
 .DS_Store
 node_modules/
 .env
+backend/.venv/
+frontend/dist/
+data/raw/
+data/cleaned/
+data/models/
+data/*.db
+backend/data/
+__pycache__/
+*.pyc
+.pytest_cache/

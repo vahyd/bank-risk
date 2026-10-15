@@ -1,0 +1,56 @@
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: bank
+      POSTGRES_PASSWORD: bank
+      POSTGRES_DB: bankrisk
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U bank"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  backend:
+    build: ./backend
+    environment:
+      DATABASE_URL: postgresql+psycopg://bank:bank@db:5432/bankrisk
+      OLLAMA_URL: http://ollama:11434
+      OLLAMA_MODEL: llama3.1
+      LLM_FALLBACK: "true"
+      CORS_ORIGINS: http://localhost:5173
+    ports:
+      - "8000:8000"
+    depends_on:
+      db:
+        condition: service_healthy
+      ollama:
+        condition: service_started
+    volumes:
+      - ./data:/data
+
+  frontend:
+    build: ./frontend
+    environment:
+      VITE_API_PROXY: http://backend:8000
+    ports:
+      - "5173:5173"
+    depends_on:
+      - backend
+
+  # Optional: self-hosted open-source LLM (Llama 3.1 / Mistral)
+  ollama:
+    image: ollama/ollama:latest
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama:/root/.ollama
+    # First run: `docker compose exec ollama ollama pull llama3.1`
+
+volumes:
+  pgdata:
+  ollama:
