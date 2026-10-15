@@ -54,8 +54,17 @@ and status — an MLflow-compatible schema. Retrain via `POST /api/admin/train` 
 ## RBAC
 
 Roles: `admin`, `analyst`, `rm`, `compliance`, `treasury`. The prototype accepts
-`X-User` / `X-Role` headers (UI has a role switcher). Production should replace
-this with OIDC/SAML and short-lived tokens.
+`X-User` / `X-Role` headers (UI has a role switcher); when no `X-Role` header is
+sent it defaults to `admin`. Production should replace this with OIDC/SAML and
+short-lived tokens.
+
+| Role | Permissions |
+|------|-------------|
+| `admin` | `*` (everything) |
+| `analyst` | `dashboard:read`, `customers:read`, `credit:read`, `fraud:read`, `fraud:write`, `aml:read`, `liquidity:read`, `segmentation:read`, `models:read` |
+| `rm` | `dashboard:read`, `customers:read`, `credit:read`, `liquidity:read`, `segmentation:read`, `rm:read`, `rm:write` |
+| `compliance` | `dashboard:read`, `customers:read`, `aml:read`, `aml:write`, `audit:read` |
+| `treasury` | `dashboard:read`, `customers:read`, `liquidity:read`, `liquidity:write` |
 
 ## Open-source LLM
 

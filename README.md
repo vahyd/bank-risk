@@ -18,7 +18,7 @@ data. The platform never auto-approves credit or auto-blocks payments.
 
 ## Quick start (local, no Docker)
 
-Requires Python 3.12 and Node 20+.
+Requires Python 3.12+ and Node 20+.
 
 ```bash
 # 1. Backend (FastAPI + SQLite default)
@@ -73,7 +73,8 @@ backend/          FastAPI app
   tests/          pytest smoke suite
 frontend/         React + TypeScript (Vite) — 10 pages
 docs/             architecture, API reference, agent instructions
-data/             raw/cleaned CSVs, SQLite DB, model artifacts (generated)
+data/             generated artifacts: raw/cleaned CSVs + model files (gitignored)
+backend/data/     SQLite DB for local dev (gitignored)
 docker-compose.yml
 ```
 

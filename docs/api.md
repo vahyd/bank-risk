@@ -4,9 +4,12 @@ Base URL: `http://localhost:8000/api`
 Interactive docs: `http://localhost:8000/docs`
 
 All endpoints (except `/health`) accept demo RBAC headers:
-`X-Role: admin|analyst|rm|compliance|treasury`, `X-User: name`.
+`X-Role: admin|analyst|rm|compliance|treasury`, `X-User: name`. If no `X-Role`
+header is sent, the API defaults to `admin`.
 
 ## Executive & customers
+
+Scopes: `/dashboard/overview` → `dashboard:read` · `/customers*` → `customers:read` · `/health` is unauthenticated.
 
 | Method | Endpoint | Description |
 |--------|----------|-------------|
@@ -17,12 +20,16 @@ All endpoints (except `/health`) accept demo RBAC headers:
 
 ## Credit risk
 
+Scope: `credit:read`.
+
 | Method | Endpoint | Description |
 |--------|----------|-------------|
 | GET | `/credit-risk/portfolio` | Exposure, EL, grades, calibration, importances, metrics |
 | GET | `/credit-risk/customers/{id}` | PD/LGD/EAD/EL, drivers, early warning |
 
 ## Fraud
+
+Scopes: reads → `fraud:read` · writes (`/fraud/score`, `/fraud/alerts/*`) → `fraud:write`.
 
 | Method | Endpoint | Description |
 |--------|----------|-------------|
@@ -43,12 +50,16 @@ curl -X POST http://localhost:8000/api/fraud/score \
 
 ## AML
 
+Scopes: `/aml/dashboard` → `aml:read` · `/aml/cases/*` → `aml:write`.
+
 | Method | Endpoint | Description |
 |--------|----------|-------------|
 | GET | `/aml/dashboard` | Alerts, cases, graph patterns, metrics |
 | POST | `/aml/cases/{id}` | `{"action": "sar_filed"|"closed"|"investigating", "notes": ...}` |
 
 ## Liquidity
+
+Scope: `liquidity:read`.
 
 | Method | Endpoint | Description |
 |--------|----------|-------------|
@@ -59,12 +70,16 @@ Scenarios: `base`, `delayed_receivables`, `sales_drop`, `unexpected_outflows`.
 
 ## RM assistant
 
+Scope: `rm:read`.
+
 | Method | Endpoint | Description |
 |--------|----------|-------------|
 | POST | `/rm/chat` | `{"query": "...", "customer_id": optional}` → RAG answer + sources |
 | GET | `/rm/brief/{customer_id}` | Meeting brief + next best actions |
 
 ## Segmentation, models, admin
+
+Scopes: `/segmentation` → `segmentation:read` · `/models/*` → `models:read` · `/admin/*` → `audit:read`.
 
 | Method | Endpoint | Description |
 |--------|----------|-------------|
